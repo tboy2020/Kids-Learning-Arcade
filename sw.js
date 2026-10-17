@@ -2,7 +2,7 @@
    HTML: network-first (fresh when online, cached when offline).
    Assets (icons, manifest): cache-first.
    Bump CACHE when you add a game or change SW logic. */
-var CACHE = 'kids-arcade-v5';
+var CACHE = 'kids-arcade-v6';
 var SHELL = [
   './', './index.html', './manifest.json',
   './icon-192.png', './icon-512.png', './icon-180.png',
@@ -13,7 +13,11 @@ var SHELL = [
   './trace-stars/index.html',
   './clock-coins/index.html',
   './wild-world/index.html',
-  './world-hop/index.html'
+  './world-hop/index.html',
+  './tap-a-tune/index.html',
+  './story-spinner/index.html',
+  './brain-buddies/index.html',
+  './feelings-friends/index.html'
 ];
 
 self.addEventListener('install', function (e) {

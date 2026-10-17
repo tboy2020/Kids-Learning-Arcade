@@ -1,0 +1,17 @@
+{
+  "name": "Kids Learning Arcade",
+  "short_name": "Kids Arcade",
+  "description": "A bright, friendly learning arcade for little ones — spelling, math and more. Pass-and-play, talking, offline. No ads, no tracking.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fff3df",
+  "theme_color": "#6d5bff",
+  "categories": ["education", "games", "kids"],
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

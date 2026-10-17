@@ -290,7 +290,7 @@ var STORIES=[
 ];
 var WHICHFIT=[
  ["A fish lives in the ","! 🐟",["water","🌊"],[["tree","🌳"],["bed","🛏️"],["sky","☁️"]]],
- ["Birds can ","! 🐦",["fly","🕊️"],[["swim","🏊"],["dig","⛏️"],["read","📖"]]],
+ ["Birds can ","! 🐦",["fly","🕊️"],[["bark","🐶"],["dig","⛏️"],["read","📖"]]],
  ["We sleep at ","! 😴",["night","🌙"],[["lunch","🍽️"],["park","🏞️"],["school","🏫"]]],
  ["You wear shoes on your ","! 👟",["feet","🦶"],[["head","🧢"],["hands","✋"],["nose","👃"]]],
  ["A cow says ","! 🐮",["moo","🗣️"],[["woof","🐶"],["meow","🐱"],["quack","🦆"]]],
@@ -306,6 +306,7 @@ var WHICHFIT=[
 var S={count:2,rounds:6,players:[],skills:{}};
 var opt={tts:true,sfx:true};
 var G=null;
+var navTok=0;
 
 function save(){try{localStorage.setItem("ss_opt",JSON.stringify(opt));localStorage.setItem("ss_setup",JSON.stringify(S));}catch(e){}}
 function load(){try{
@@ -332,7 +333,7 @@ function speak(t,rate){if(!opt.tts||!t)return; try{var sy=window.speechSynthesis
 
 function show(id){$$(".screen").forEach(function(s){s.classList.remove("active");}); var el=$("#"+id); if(el)el.classList.add("active"); window.scrollTo(0,0);}
 function goSetup(){resumeAudio(); buildSetup(); show("setup");}
-function quitToHome(){if(window.confirm("Leave the game and go home? Scores will be lost.")){try{window.speechSynthesis.cancel();}catch(e){} show("splash");}}
+function quitToHome(){if(window.confirm("Leave the game and go home? Scores will be lost.")){navTok++; try{window.speechSynthesis.cancel();}catch(e){} show("splash");}}
 function openHow(){$("#howOverlay").classList.add("show");}
 function closeHow(){$("#howOverlay").classList.remove("show");}
 function openSettings(){syncToggles(); $("#setOverlay").classList.add("show");}
@@ -419,7 +420,7 @@ function beginTurn(){
   if(!G.firstTut){G.firstTut=true; markTut(); setTimeout(openHow,400);}
   setTimeout(sayProblem,500);
 }
-function endTurn(){G.turnCount++; if(G.turnCount>=G.total) setTimeout(endGame,900); else setTimeout(startTurn,900);}
+function endTurn(){G.turnCount++; var tok=++navTok; if(G.turnCount>=G.total) setTimeout(function(){if(navTok!==tok)return; endGame();},900); else setTimeout(function(){if(navTok!==tok)return; startTurn();},900);}
 function skipTurn(){sSoft(); speak("That's okay! Next player."); toast("No worries — next turn! 😊"); endTurn();}
 
 function renderScoreboard(){
@@ -463,8 +464,8 @@ function genType(t){
   var correct=pick(POOL[tgt[0]]);
   var otherPools=types.filter(function(x){return x[0]!==tgt[0];}).map(function(x){return x[0];});
   var opts=[{word:correct[0],e:correct[1],correct:true}];
-  var pool=[]; otherPools.forEach(function(k){ POOL[k].forEach(function(w){ pool.push(w); }); });
-  var ds=sampleDistinct(pool,n-1,function(x){return x[0];});
+  var pool=[]; otherPools.forEach(function(k){ POOL[k].forEach(function(w){ if(w[1]!==correct[1]) pool.push(w); }); });
+  var ds=sampleDistinct(pool,n-1,function(x){return x[1];}); // distinct by emoji so no two options share a picture
   ds.forEach(function(w){opts.push({word:w[0],e:w[1],correct:false});});
   shuffle(opts);
   return {kind:"type",prompt:"Which one is a "+tgt[1].toUpperCase().replace(" (A THING)","")+"? "+tgt[2],options:opts,say:"Which one is a "+tgt[1]+"?",tgt:tgt[0]};

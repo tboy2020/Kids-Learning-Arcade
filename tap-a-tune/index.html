@@ -405,13 +405,14 @@ function startTurn(){
   $("#pass").classList.add("show"); speak(p.name+"'s turn!");
 }
 function beginTurn(){
+  if(!$("#pass").classList.contains("show")) return; // debounce double-tap
   resumeAudio(); $("#pass").classList.remove("show");
   var p=curPlayer();
   $("#turnbanner").innerHTML="🎯 It's <b>"+escapeHTML(p.name)+"</b>'s turn! <span class='roundtag'>· Round "+curRound()+"/"+G.rounds+"</span>";
   G.problem=genProblem(p); G.solved=false; renderProblem();
   if(!G.firstTut){G.firstTut=true; markTut(); setTimeout(openHow,400);}
 }
-function endTurn(){seqToken++; G.turnCount++; if(G.turnCount>=G.total) setTimeout(endGame,800); else setTimeout(startTurn,800);}
+function endTurn(){seqToken++; G.turnCount++; var tok=seqToken; if(G.turnCount>=G.total) setTimeout(function(){if(seqToken!==tok)return; endGame();},800); else setTimeout(function(){if(seqToken!==tok)return; startTurn();},800);}
 function skipTurn(){seqToken++; sSoft(); speak("That's okay! Next player."); toast("No worries — next turn! 😊"); endTurn();}
 
 function renderScoreboard(){
@@ -461,13 +462,13 @@ function renderPads(){
   return g;
 }
 function watchSequence(){
-  var pr=G.problem; var tok=seqToken; pr.phase="watch"; $("#prompt").textContent="Watch and listen… 👀";
+  seqToken++; var tok=seqToken; var pr=G.problem; if(!pr)return; pr.phase="watch"; pr.step=0; $("#prompt").textContent="Watch and listen… 👀";
   var seq=pr.kind==="repeat"?pr.seq:null; if(!seq)return;
   seq.forEach(function(idx,k){ setTimeout(function(){ if(seqToken!==tok||G.solved)return; lightPad(idx); if(k===seq.length-1){ setTimeout(function(){ if(seqToken!==tok||G.solved)return; pr.phase="play"; pr.step=0; $("#prompt").textContent="Now YOU repeat it! 🔁"; },520); } }, 350+k*620); });
 }
 function glowNext(){ $$(".pad").forEach(function(b){b.classList.remove("glow");}); var pr=G.problem; if(pr.kind==="song" && pr.step<pr.notes.length){ var el=$("#pad"+pr.notes[pr.step]); if(el)el.classList.add("glow"); } }
 function playAll(indices,onDone){
-  var tok=seqToken;
+  seqToken++; var tok=seqToken;
   indices.forEach(function(idx,k){ setTimeout(function(){ if(seqToken!==tok)return; lightPad(idx); if(k===indices.length-1&&onDone) setTimeout(function(){if(seqToken===tok)onDone();},500); }, 300+k*620); });
 }
 function listenAgain(){
@@ -481,14 +482,14 @@ function listenAgain(){
 function renderProblem(){
   var pr=G.problem; $("#prompt").textContent=pr.prompt;
   var stage=$("#stage"), area=$("#area"); stage.innerHTML=""; area.innerHTML="";
-  $("#listenBtn").style.display="";
-  if(pr.kind==="repeat"){ stage.appendChild(renderPads()); setTimeout(watchSequence,500); }
-  else if(pr.kind==="song"){ stage.appendChild(renderPads()); setTimeout(function(){ glowNext(); setTimeout(function(){playAll(pr.notes, glowNext);},300); }, 350); }
+  $("#listenBtn").style.display=""; var tok=seqToken;
+  if(pr.kind==="repeat"){ stage.appendChild(renderPads()); setTimeout(function(){if(seqToken!==tok)return; watchSequence();},500); }
+  else if(pr.kind==="song"){ stage.appendChild(renderPads()); setTimeout(function(){ if(seqToken!==tok)return; glowNext(); setTimeout(function(){if(seqToken!==tok)return; playAll(pr.notes, glowNext);},300); }, 350); }
   else if(pr.kind==="highlow"){
     var box=document.createElement("div"); box.className="choices";
     ["1️⃣ First","2️⃣ Second"].forEach(function(lab,i){ var b=document.createElement("button"); b.className="choice"; b.textContent=lab; b.onclick=function(){chooseHL(i,b);}; box.appendChild(b); });
     area.appendChild(box);
-    setTimeout(function(){ playAll([pr.a,pr.b]); }, 500);
+    setTimeout(function(){ if(seqToken!==tok)return; playAll([pr.a,pr.b]); }, 500);
   }
 }
 function padTap(i){
@@ -497,7 +498,7 @@ function padTap(i){
     if(pr.phase!=="play") return;
     lightPad(i);
     if(i===pr.seq[pr.step]){ pr.step++; if(pr.step>=pr.seq.length){ winTurn(); } }
-    else{ pr._wrong=(pr._wrong||0)+1; sSoft(); var el=$("#pad"+i); toast(pick(["Oops! Listen again 👂","Good try! Watch once more 🔁","Almost! Here it comes again 🎵"])); speak("Try again! Here it is again."); setTimeout(watchSequence,700); }
+    else{ pr._wrong=(pr._wrong||0)+1; sSoft(); pr.phase="watch"; pr.step=0; toast(pick(["Oops! Listen again 👂","Good try! Watch once more 🔁","Almost! Here it comes again 🎵"])); speak("Try again! Here it is again."); var tok=seqToken; setTimeout(function(){if(seqToken!==tok)return; watchSequence();},700); }
   } else if(pr.kind==="song"){
     if(i===pr.notes[pr.step]){ lightPad(i); pr.step++; if(pr.step>=pr.notes.length){ winTurn(); } else { glowNext(); } }
     else{ pr._wrong=(pr._wrong||0)+1; sSoft(); var e2=$("#pad"+i); e2.classList.add("lit"); setTimeout(function(){e2.classList.remove("lit");},200); toast("Tap the glowing pad 😊"); }

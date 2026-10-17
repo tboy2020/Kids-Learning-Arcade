@@ -285,19 +285,24 @@ var SKILLS=[
 var TIER_SKILLS={1:["home","eat","living","senses"],2:["home","eat","living","senses","cycle"],3:["home","eat","cycle","living","senses"]};
 var TIER_NAME={1:"Little Explorer",2:"Nature Finder",3:"Little Scientist"};
 
-/* animals: [name, emoji, habitatKey, foodName, foodEmoji] */
+/* animals: [name, emoji, habitatKey, diet(plant|meat), foodName, foodEmoji].
+   For "what does it eat", distractors are drawn from the OPPOSITE diet so a wrong option is never a food the animal actually eats. */
 var ANIMALS=[
- ["cat","🐱","home","milk","🥛"],["dog","🐶","home","bone","🦴"],["mouse","🐭","home","cheese","🧀"],
- ["cow","🐮","farm","grass","🌿"],["pig","🐷","farm","corn","🌽"],["hen","🐔","farm","seeds","🌾"],["horse","🐴","farm","hay","🌾"],["sheep","🐑","farm","grass","🌿"],
- ["fish","🐟","ocean","worm","🪱"],["whale","🐋","ocean","krill","🦐"],["crab","🦀","ocean","algae","🌿"],["octopus","🐙","ocean","crab","🦀"],["dolphin","🐬","ocean","fish","🐟"],
- ["lion","🦁","grassland","meat","🍖"],["zebra","🦓","grassland","grass","🌿"],["giraffe","🦒","grassland","leaves","🍃"],["elephant","🐘","grassland","leaves","🍃"],
- ["monkey","🐵","jungle","banana","🍌"],["tiger","🐯","jungle","meat","🍖"],["parrot","🦜","jungle","fruit","🍓"],["snake","🐍","jungle","egg","🥚"],
- ["bear","🐻","forest","honey","🍯"],["deer","🦌","forest","leaves","🍃"],["owl","🦉","forest","mouse","🐭"],["fox","🦊","forest","berries","🫐"],["rabbit","🐰","forest","carrot","🥕"],["squirrel","🐿️","forest","nuts","🥜"],["panda","🐼","forest","bamboo","🎍"],
- ["penguin","🐧","ice","fish","🐟"],["polar bear","🐻‍❄️","ice","seal","🦭"],["seal","🦭","ice","fish","🐟"],
- ["camel","🐫","desert","cactus","🌵"],
- ["bee","🐝","garden","flowers","🌸"],["frog","🐸","pond","bugs","🐛"],["duck","🦆","pond","bread","🍞"]
+ ["cat","🐱","home","meat","fish","🐟"],["dog","🐶","home","meat","a bone","🦴"],["mouse","🐭","home","plant","seeds","🌱"],
+ ["cow","🐮","farm","plant","grass","🌿"],["pig","🐷","farm","plant","corn","🌽"],["hen","🐔","farm","plant","seeds","🌱"],["horse","🐴","farm","plant","hay","🌾"],["sheep","🐑","farm","plant","grass","🌿"],
+ ["fish","🐟","ocean","meat","worms","🪱"],["whale","🐋","ocean","meat","krill","🦐"],["octopus","🐙","ocean","meat","crabs","🦀"],["dolphin","🐬","ocean","meat","fish","🐟"],
+ ["lion","🦁","grassland","meat","meat","🍖"],["zebra","🦓","grassland","plant","grass","🌿"],["giraffe","🦒","grassland","plant","leaves","🍃"],["elephant","🐘","grassland","plant","leaves","🍃"],
+ ["monkey","🐵","jungle","plant","bananas","🍌"],["tiger","🐯","jungle","meat","meat","🍖"],["parrot","🦜","jungle","plant","fruit","🍓"],["snake","🐍","jungle","meat","eggs","🥚"],
+ ["bear","🐻","forest","meat","fish","🐟"],["deer","🦌","forest","plant","leaves","🍃"],["owl","🦉","forest","meat","mice","🐭"],["fox","🦊","forest","meat","eggs","🥚"],["rabbit","🐰","forest","plant","carrots","🥕"],["squirrel","🐿️","forest","plant","nuts","🥜"],["panda","🐼","forest","plant","bamboo","🎍"],
+ ["penguin","🐧","ice","meat","fish","🐟"],["polar bear","🐻‍❄️","ice","meat","seals","🦭"],["seal","🦭","ice","meat","fish","🐟"],
+ ["camel","🐫","desert","plant","leaves","🍃"],
+ ["bee","🐝","garden","plant","nectar","🌸"],["frog","🐸","pond","meat","bugs","🐛"],["duck","🦆","pond","plant","seeds","🌱"]
 ];
+var FOODS_PLANT=[["grass","🌿"],["corn","🌽"],["seeds","🌱"],["hay","🌾"],["leaves","🍃"],["bananas","🍌"],["carrots","🥕"],["nuts","🥜"],["bamboo","🎍"],["fruit","🍓"],["nectar","🌸"]];
+var FOODS_MEAT=[["fish","🐟"],["a bone","🦴"],["worms","🪱"],["krill","🦐"],["meat","🍖"],["eggs","🥚"],["mice","🐭"],["seals","🦭"],["bugs","🐛"],["crabs","🦀"]];
 var HABITATS={home:["home","🏠"],farm:["farm","🚜"],ocean:["ocean","🌊"],grassland:["grassland","🌾"],jungle:["jungle","🌴"],forest:["forest","🌲"],ice:["ice","❄️"],desert:["desert","🏜️"],garden:["garden","🌻"],pond:["pond","🪷"]};
+/* habitat families — distractors never share the correct habitat's family, so grazing/pet animals aren't marked wrong */
+var HABGROUP={home:"home",farm:"green",grassland:"green",garden:"green",forest:"trees",jungle:"trees",ocean:"water",pond:"water",ice:"ice",desert:"desert"};
 /* life cycles: [name, [stage emojis in order]] */
 var CYCLES=[
  ["butterfly",["🥚","🐛","🦋"]],["chicken",["🥚","🐣","🐔"]],["tree",["🌰","🌱","🌳"]],
@@ -305,7 +310,8 @@ var CYCLES=[
 ];
 var LIVING=[["dog","🐶"],["tree","🌳"],["bee","🐝"],["flower","🌸"],["fish","🐟"],["cat","🐱"],["butterfly","🦋"],["bird","🐦"],["plant","🌱"],["frog","🐸"]];
 var NONLIVING=[["rock","🪨"],["car","🚗"],["ball","⚽"],["spoon","🥄"],["chair","🪑"],["balloon","🎈"],["box","📦"],["key","🔑"],["brick","🧱"],["cup","🥤"]];
-var SENSES=[["see","👀","eyes","👁️"],["hear","👂","ears","👂"],["smell","👃","nose","👃"],["taste","👅","tongue","👅"],["touch","✋","hands","✋"]];
+/* [sense, ACTIVITY emoji shown (not the body part — don't give away the answer), partName, partEmoji] */
+var SENSES=[["see","🌈","eyes","👁️"],["hear","🎵","ears","👂"],["smell","🌸","nose","👃"],["taste","🍎","tongue","👅"],["touch","🧸","hands","✋"]];
 var SENSE_PARTS=[["eyes","👁️"],["ears","👂"],["nose","👃"],["tongue","👅"],["hands","✋"]];
 
 var S={count:2,rounds:6,players:[],skills:{}};
@@ -453,8 +459,8 @@ function genProblem(p){
   return genSenses(t);
 }
 function genHome(t){
-  var a=pick(ANIMALS); var corrKey=a[2]; var n=nOpt(t);
-  var other=Object.keys(HABITATS).filter(function(h){return h!==corrKey;}); other=sampleDistinct(other,n-1);
+  var a=pick(ANIMALS); var corrKey=a[2]; var n=nOpt(t); var g=HABGROUP[corrKey];
+  var other=Object.keys(HABITATS).filter(function(h){return h!==corrKey && HABGROUP[h]!==g;}); other=sampleDistinct(other,n-1);
   var opts=[{e:HABITATS[corrKey][1],label:HABITATS[corrKey][0],correct:true}];
   other.forEach(function(h){opts.push({e:HABITATS[h][1],label:HABITATS[h][0],correct:false});});
   shuffle(opts);
@@ -462,9 +468,10 @@ function genHome(t){
 }
 function genEat(t){
   var a=pick(ANIMALS); var n=nOpt(t);
-  var others=sampleDistinct(ANIMALS.filter(function(x){return x[3]!==a[3];}), n-1, function(x){return x[3];});
-  var opts=[{e:a[4],label:a[3],correct:true}];
-  others.forEach(function(x){opts.push({e:x[4],label:x[3],correct:false});});
+  var opp=a[3]==="plant"?FOODS_MEAT:FOODS_PLANT;
+  var others=sampleDistinct(opp.filter(function(f){return f[0]!==a[4];}), n-1, function(f){return f[0];});
+  var opts=[{e:a[5],label:a[4],correct:true}];
+  others.forEach(function(f){opts.push({e:f[1],label:f[0],correct:false});});
   shuffle(opts);
   return {kind:"choose",pic:a[1],prompt:"What does the "+a[0]+" eat? 🍽️",options:opts,say:"What does the "+a[0]+" eat?"};
 }
@@ -479,7 +486,7 @@ function genSenses(t){
 function genLiving(t){
   var living=Math.random()<0.5;
   var thing=living?pick(LIVING):pick(NONLIVING);
-  var opts=[{label:"Yes, alive! 🌱",correct:living, isText:true},{label:"No 🪨",correct:!living, isText:true}];
+  var opts=[{label:"Yes, alive! 🌱",correct:living, isText:true},{label:"No 🪨",correct:!living, isText:true}]; shuffle(opts);
   return {kind:"choose",pic:thing[1],prompt:"Is the "+thing[0]+" ALIVE? 🌱",options:opts,say:"Is the "+thing[0]+" alive?",isLiving:true};
 }
 function genCycle(t){

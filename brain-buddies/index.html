@@ -274,21 +274,24 @@ var SKILLS=[
 ];
 var TIER_SKILLS={1:["opp","cat","same"],2:["opp","odd","cat","same"],3:["opp","odd","cat","same"]};
 var TIER_NAME={1:"Little Thinker",2:"Brain Buddy",3:"Super Thinker"};
+/* 5th field = semantic family; distractors never share the prompt's family (so there's only one right opposite) */
 var OPPOSITES=[
- ["big","🔵","small","🔹"],["hot","🔥","cold","❄️"],["up","⬆️","down","⬇️"],["day","☀️","night","🌙"],
- ["happy","😊","sad","😢"],["fast","🏃","slow","🐢"],["wet","💧","dry","🏜️"],["loud","📢","quiet","🤫"],
- ["in","📥","out","📤"],["soft","🧸","hard","🧱"],["tall","🦒","short","🐭"],["open","🔓","closed","🔒"],
- ["young","👶","old","👵"],["light","🪶","heavy","🏋️"],["full","🪣","empty","🫙"],["smile","😀","frown","☹️"]
+ ["big","🔵","small","🔹","size"],["tall","🦒","short","🐭","size"],["light","🪶","heavy","🏋️","size"],
+ ["hot","🔥","cold","❄️","temp"],["up","⬆️","down","⬇️","dir"],["in","📥","out","📤","dir"],
+ ["day","☀️","night","🌙","time"],["young","👶","old","👵","age"],
+ ["happy","😊","sad","😢","mood"],["fast","🏃","slow","🐢","speed"],["wet","💧","dry","🏜️","wet"],
+ ["loud","📢","quiet","🤫","vol"],["soft","🧸","hard","🧱","touch"],["open","🔓","closed","🔒","state"],
+ ["full","🥛","empty","🫙","fill"]
 ];
 var CATS={
  animals:{name:"animal",items:["🐶","🐱","🐮","🐷","🐸","🐵","🦁","🐰","🐻","🦆","🐯","🐨"]},
  food:{name:"food",items:["🍎","🍌","🍕","🍰","🍪","🥕","🧀","🍉","🍇","🍞","🥦","🍓"]},
  vehicle:{name:"vehicle",items:["🚗","🚌","✈️","🚂","🚲","🚒","🚜","⛵","🚀","🚁","🚕","🛴"]},
- toy:{name:"toy",items:["🧸","🪀","🎈","🪁","🧩","⚽","🪆","🎨","🎲","🛝"]},
+ toy:{name:"toy",items:["🧸","🪀","🎈","🪁","🧩","⚽","🪆","🎲","🎮"]},
  clothes:{name:"clothes",items:["👕","👖","🧦","👟","🧢","🧥","👗","🧤","👔","🥾"]}
 };
 var CATKEYS=Object.keys(CATS);
-var ALLOPP=[]; OPPOSITES.forEach(function(p){ ALLOPP.push([p[0],p[1]]); ALLOPP.push([p[2],p[3]]); });
+var ALLOPP=[]; OPPOSITES.forEach(function(p){ ALLOPP.push([p[0],p[1],p[4]]); ALLOPP.push([p[2],p[3],p[4]]); });
 
 var S={count:2,rounds:6,players:[],skills:{}};
 var opt={tts:true,sfx:true};
@@ -433,11 +436,11 @@ function genProblem(p){
   return genOpp(t);
 }
 function genOpp(t){
-  var pr=pick(OPPOSITES); var flip=Math.random()<0.5;
+  var pr=pick(OPPOSITES); var flip=Math.random()<0.5; var fam=pr[4];
   var pw=flip?pr[2]:pr[0], pe=flip?pr[3]:pr[1], aw=flip?pr[0]:pr[2], ae=flip?pr[1]:pr[3];
   var n=nOpt(t);
   var opts=[{word:aw,e:ae,correct:true}];
-  var ds=sampleDistinct(ALLOPP.filter(function(x){return x[0]!==pw&&x[0]!==aw;}),n-1,function(x){return x[0];});
+  var ds=sampleDistinct(ALLOPP.filter(function(x){return x[2]!==fam;}),n-1,function(x){return x[0];});
   ds.forEach(function(x){opts.push({word:x[0],e:x[1],correct:false});}); shuffle(opts);
   return {kind:"choose",pic:pe,withLabel:true,prompt:"What is the opposite of "+pw+"? ↔️",options:opts,say:"What is the opposite of "+pw+"?"};
 }
@@ -445,7 +448,7 @@ function genOdd(t){
   var cs=sampleDistinct(CATKEYS,2); var a=cs[0], b=cs[1];
   var three=sampleDistinct(CATS[a].items,3); var one=pick(CATS[b].items);
   var opts=three.map(function(e){return {e:e,correct:false};}); opts.push({e:one,correct:true}); shuffle(opts);
-  return {kind:"choose",pic:null,withLabel:false,prompt:"Which one is DIFFERENT? 🔍",options:opts,say:"Which one is different? Three go together and one does not."};
+  return {kind:"choose",odd:true,pic:null,withLabel:false,prompt:"Which one is DIFFERENT? 🔍",options:opts,say:"Which one is different? Three go together and one does not."};
 }
 function genCat(t){
   var tk=pick(CATKEYS); var n=nOpt(t);
@@ -490,7 +493,7 @@ function choose(o,btn){
 function winTurn(){
   var pr=G.problem, p=curPlayer();
   var stars=pr._wrong>0?2:3;
-  var base=(pr.prompt.indexOf("DIFFERENT")>=0)?14:12;
+  var base=pr.odd?14:12;
   p.score+=base; p.stars+=stars; p.streak++;
   renderScoreboard(); confetti();
   speak("That's right! "+praise());

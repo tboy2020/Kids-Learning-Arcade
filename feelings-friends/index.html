@@ -278,7 +278,7 @@ var SKILLS=[
 ];
 var TIER_SKILLS={1:["feel","kind","manners","calm"],2:["feel","kind","manners","calm"],3:["feel","kind","manners","calm"]};
 var TIER_NAME={1:"Little Friend",2:"Kind Buddy",3:"Caring Star"};
-var FEELINGS=[["happy","😊"],["sad","😢"],["angry","😠"],["scared","😨"],["sleepy","😴"],["surprised","😲"],["excited","🤩"],["shy","😳"],["proud","😌"],["loved","🥰"]];
+var FEELINGS=[["happy","😊"],["sad","😢"],["angry","😠"],["scared","😨"],["sleepy","😴"],["surprised","😲"],["excited","🤩"],["shy","🙈"],["calm","😌"],["loved","🥰"],["silly","😜"],["crying","😭"]];
 var KIND=[
  ["Your friend is sad. What is kind?",[["Give a hug 🤗",true],["Laugh at them 😆",false],["Walk away 🚶",false]]],
  ["Your friend fell down. What is kind?",[["Help them up 🤝",true],["Point and giggle 😜",false],["Ignore them 🙈",false]]],
@@ -293,7 +293,7 @@ var MANNERS=[
  ["Someone gives you a gift. You say…",[["Thank you! 🙏",true],["Go away! 😠",false],["Mine! 😤",false]]],
  ["You want a cookie. You say…",[["Please? 🥺",true],["Give me! 😤",false],["Now! 📢",false]]],
  ["You bump into someone. You say…",[["Sorry! 🙏",true],["Move! 😠",false],["Ha ha! 😆",false]]],
- ["Someone helped you. You say…",[["Thank you! 💛",true],["Whatever 🙄",false],["Bye! 👋",false]]],
+ ["Someone helped you. You say…",[["Thank you! 💛",true],["Whatever 🙄",false],["Go away! 😠",false]]],
  ["You meet someone new. You say…",[["Hello! 👋",true],["Go away 🙅",false]]],
  ["It is bedtime. You say…",[["Good night! 🌙",true],["No way! 😤",false]]],
  ["You finished eating. You say…",[["Thank you for dinner! 😋",true],["More! 📢",false]]]
@@ -454,17 +454,18 @@ function genFeeling(t){
     var opts=[{e:tgt[1],word:tgt[0],correct:true}];
     var ds=sampleDistinct(FEELINGS.filter(function(x){return x[0]!==tgt[0];}),n-1,function(x){return x[0];});
     ds.forEach(function(x){opts.push({e:x[1],word:x[0],correct:false});}); shuffle(opts);
-    return {kind:"choose",faces:true,prompt:"Find the "+tgt[0]+" face! "+tgt[1],options:opts,say:"Find the "+tgt[0]+" face."};
+    return {kind:"choose",faces:true,prompt:"Find the "+tgt[0]+" face! 🔍",options:opts,say:"Find the "+tgt[0]+" face."};
   } else {
     var opts2=[{word:tgt[0],correct:true,isText:true}];
     var ds2=sampleDistinct(FEELINGS.filter(function(x){return x[0]!==tgt[0];}),n-1,function(x){return x[0];});
     ds2.forEach(function(x){opts2.push({word:x[0],correct:false,isText:true});}); shuffle(opts2);
-    return {kind:"choose",pic:tgt[1],prompt:"How does this face feel? 🤔",options:opts2,say:"How does this face feel?"};
+    return {kind:"choose",pic:tgt[1],prompt:"How does this face feel? 🤔",options:opts2,say:"How does this face feel? Is it "+opts2.map(function(o){return o.word;}).join(", or ")+"?"};
   }
 }
 function genScenario(bank,t,emo,promptQ){
   var sc=pick(bank); var opts=sc[1].map(function(o){return {label:o[0],correct:o[1],isText:true};}); shuffle(opts);
-  return {kind:"choose",scene:sc[0],prompt:promptQ+" "+emo,options:opts,say:sc[0]+" "+promptQ};
+  var choicesSpoken=opts.map(function(o){return o.label.replace(/[^a-zA-Z ,'!?]/g,"").trim();}).join(", or ");
+  return {kind:"choose",scene:sc[0],prompt:promptQ+" "+emo,options:opts,say:sc[0]+". "+promptQ+" Is it: "+choicesSpoken+"?"};
 }
 function genCalm(t){
   var c=pick(CALM);
@@ -475,7 +476,7 @@ function genCalm(t){
 function renderProblem(){
   var pr=G.problem; $("#prompt").textContent=pr.prompt;
   var stage=$("#stage"), area=$("#area"); stage.innerHTML=""; area.innerHTML="";
-  if(pr.kind==="calm"){ renderCalm(pr); $("#listenBtn")&&0; return; }
+  if(pr.kind==="calm"){ renderCalm(pr); return; }
   if(pr.pic){var d=document.createElement("div"); d.className="bigpic"; d.textContent=pr.pic; stage.appendChild(d);}
   if(pr.scene){var sc=document.createElement("div"); sc.className="scene"; sc.textContent=pr.scene; stage.appendChild(sc);}
   var box=document.createElement("div"); box.className="choices";

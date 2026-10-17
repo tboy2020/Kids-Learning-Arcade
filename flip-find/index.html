@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Flip &amp; Find — Memory Game for Kids</title>
 <meta name="description" content="A bright, friendly memory match game. Flip cards and find the pairs — matching letters, numbers and pictures. Pass-and-play, works offline.">
 <meta name="theme-color" content="#7048e8">
@@ -247,7 +247,12 @@ var KINDS=[
 ];
 var WORDS=[["cat","🐱"],["dog","🐶"],["sun","☀️"],["pig","🐷"],["fish","🐟"],["ball","⚽"],["star","⭐"],["tree","🌳"],
  ["cake","🍰"],["duck","🦆"],["bear","🐻"],["bus","🚌"],["frog","🐸"],["bird","🐦"],["moon","🌙"],["apple","🍎"],
- ["book","📖"],["car","🚗"],["hat","🎩"],["key","🔑"]];
+ ["book","📖"],["car","🚗"],["hat","🎩"],["key","🔑"],["boat","⛵"],["bee","🐝"],["cow","🐮"],["owl","🦉"],
+ ["pen","🖊️"],["cup","🥤"],["drum","🥁"],["kite","🪁"],["fox","🦊"],["lion","🦁"],["crab","🦀"],["snake","🐍"],
+ ["bell","🔔"],["ring","💍"],["sock","🧦"],["shoe","👟"],["milk","🥛"],["egg","🥚"],["leaf","🍃"],["rock","🪨"],
+ ["flag","🚩"],["gift","🎁"],["ship","🚢"],["train","🚂"],["truck","🚚"],["clock","🕐"],["lamp","💡"],["foot","🦶"],
+ ["hand","✋"],["nose","👃"],["heart","❤️"],["cloud","☁️"],["rain","🌧️"],["snow","❄️"],["fire","🔥"],["corn","🌽"],
+ ["banana","🍌"],["pizza","🍕"],["donut","🍩"],["grape","🍇"]];
 var ALPHA="abcdefghijklmnopqrstuvwxyz".toUpperCase().split("");
 
 var S={count:2,size:6,kinds:{},};
@@ -334,27 +339,27 @@ function validateStart(){var ok=selectedKinds().length>0; $("#startBtn").disable
 /* ---------- build deck ---------- */
 function dots(n){var s=""; for(var i=0;i<n;i++) s+="●"; return s;}
 function buildDeck(pairs){
-  var kinds=selectedKinds();
-  var usedL={},usedN={},usedW={};
-  var deck=[]; var pid=0;
-  for(var i=0;i<pairs;i++){
-    var kind=kinds[i%kinds.length];
-    var a,b;
-    if(kind==="letters"){ var L; do{L=ALPHA[Math.floor(Math.random()*26)];}while(usedL[L]); usedL[L]=1; a={face:L,kind:"txt"}; b={face:L.toLowerCase(),kind:"txt"}; }
-    else if(kind==="numbers"){ var N; do{N=Math.floor(Math.random()*9)+1;}while(usedN[N]); usedN[N]=1; a={face:String(N),kind:"txt"}; b={face:dots(N),kind:"dots"}; }
-    else { var w; do{w=WORDS[Math.floor(Math.random()*WORDS.length)];}while(usedW[w[0]]); usedW[w[0]]=1; a={face:w[0],kind:"txt",say:w[0]}; b={face:w[1],kind:"emoji",say:w[0]}; }
-    deck.push({id:pid+"a",pid:pid,face:a.face,kclass:a.kind,say:a.say,state:"down",by:null});
-    deck.push({id:pid+"b",pid:pid,face:b.face,kclass:b.kind,say:a.say||b.say,state:"down",by:null});
-    pid++;
+  // Build a pool of candidate pairs WITHOUT replacement, then clamp to the pool size.
+  // (Prevents the old do/while from spinning forever when a kind runs out of distinct items.)
+  var kinds=selectedKinds(); var pool=[];
+  if(kinds.indexOf("letters")>=0) ALPHA.forEach(function(L){ pool.push({af:L,ak:"txt",bf:L.toLowerCase(),bk:"txt",say:L}); });
+  if(kinds.indexOf("numbers")>=0){ for(var N=1;N<=9;N++){ pool.push({af:String(N),ak:"txt",bf:dots(N),bk:"dots",say:String(N)}); } }
+  if(kinds.indexOf("pics")>=0) WORDS.forEach(function(w){ pool.push({af:w[0],ak:"txt",bf:w[1],bk:"emoji",say:w[0]}); });
+  shuffle(pool);
+  var want=Math.max(2, Math.min(pairs, pool.length));
+  var deck=[];
+  for(var i=0;i<want;i++){ var c=pool[i];
+    deck.push({id:i+"a",pid:i,face:c.af,kclass:c.ak,say:c.say,state:"down",by:null});
+    deck.push({id:i+"b",pid:i,face:c.bf,kclass:c.bk,say:c.say,state:"down",by:null});
   }
-  shuffle(deck); return deck;
+  shuffle(deck); return {deck:deck, pairs:want};
 }
 
 function startGame(){
   resumeAudio();
   var players=S.players.slice(0,S.count).map(function(p,i){var nm=(p.name||"").trim()||("Player "+(i+1)); return {name:nm,color:colorById(p.colorId),score:0};});
-  var pairs=S.size;
-  G={players:players,deck:buildDeck(pairs),totalPairs:pairs,found:0,turnIdx:0,first:null,second:null,busy:false};
+  var built=buildDeck(S.size);
+  G={players:players,deck:built.deck,totalPairs:built.pairs,found:0,turnIdx:0,first:null,second:null,busy:false};
   save(); show("game"); applyColor(players[0]); renderScoreboard(); renderBanner(); renderBoard();
   if(!tutSeen()){markTut(); setTimeout(openHow,400);}
 }
@@ -378,7 +383,7 @@ function renderBoard(){
   G.deck.forEach(function(c){
     var b=document.createElement("button"); b.className="cardx "+c.state;
     if(c.state!=="down"){ var span=document.createElement("span"); if(c.kclass==="dots")span.className="dots"; span.textContent=c.face; b.appendChild(span); }
-    if(c.state==="matched" && c.by){ b.style.background=c.by.hex; b.style.borderColor=c.by.hex; b.style.color="#fff"; }
+    if(c.state==="matched" && c.by){ b.style.background=c.by.hex; b.style.borderColor=c.by.hex; b.style.color=c.by.ink; }
     b.disabled = (c.state!=="down") || G.busy;
     b.onclick=function(){flip(c);};
     host.appendChild(b);
@@ -395,7 +400,7 @@ function resolve(){
   var a=G.first,b=G.second, p=curPlayer();
   if(a.pid===b.pid){
     a.state="matched"; b.state="matched"; a.by=p.color; b.by=p.color;
-    p.score++; G.found++; sMatch(); setTimeout(sMatch,0); confetti();
+    p.score++; G.found++; sMatch(); confetti();
     toast("🎉 Match! "+p.name+" goes again!"); speak("Match! Go again!");
     G.first=null; G.second=null; G.busy=false; renderScoreboard(); renderBoard();
     if(G.found>=G.totalPairs){ setTimeout(endGame,800); }

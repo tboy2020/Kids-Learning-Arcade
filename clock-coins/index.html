@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Clock &amp; Coins — Time &amp; Money Game for Kids</title>
 <meta name="description" content="A bright, friendly time and money game. Tell the time on the clock, count coins, and make amounts. Pass-and-play, talking, works offline.">
 <meta name="theme-color" content="#e5384f">
@@ -428,7 +428,8 @@ function genTime(t){
   var h=ri(1,12); var mins=t===1?[0,30]:(t===2?[0,15,30,45]:[0,5,10,15,20,25,30,35,40,45,50,55]);
   var m=pick(mins); var correct=fmtTime(h,m);
   var opts=[correct],tries=0;
-  while(opts.length<3 && tries<50){tries++; var dh=h,dm=m; if(Math.random()<0.5)dh=((h-1+ri(1,2))%12)+1; else dm=pick(mins); var c=fmtTime(dh,dm); if(opts.indexOf(c)<0)opts.push(c);}
+  while(opts.length<3 && tries<80){tries++; var dh=h,dm=m; if(Math.random()<0.5)dh=((h-1+ri(1,11))%12)+1; else dm=pick(mins); var c=fmtTime(dh,dm); if(opts.indexOf(c)<0)opts.push(c);}
+  for(var gh=1; opts.length<3 && gh<=12; gh++){ var gc=fmtTime(gh,m); if(opts.indexOf(gc)<0) opts.push(gc); } // guarantee 3
   shuffle(opts);
   return {kind:"time",prompt:"What time is it? 🕐",clock:{h:h,m:m},options:opts,correctIndex:opts.indexOf(correct),say:"What time does the clock show?"};
 }
@@ -551,8 +552,8 @@ function addCoin(ct){
   var w=$("#wallet"); var e=$("#wempty"); if(e)e.remove();
   w.appendChild(coinSVG(ct));
   $("#mtot").textContent=pr.total+"¢ of "+pr.target+"¢";
-  if(pr.total===pr.target){ winTurn(pr._over?2:3); }
-  else if(pr.total>pr.target){ pr._over=true; $("#mtot").style.color="#e5384f"; sSoft(); toast("Oops, too much! Tap ↩️ Start over 😊"); speak("Too much! Start over."); }
+  if(pr.total===pr.target){ winTurn(pr._everOver?2:3); }
+  else if(pr.total>pr.target){ pr._over=true; pr._everOver=true; $("#mtot").style.color="#e5384f"; sSoft(); toast("Oops, too much! Tap ↩️ Start over 😊"); speak("Too much! Start over."); }
 }
 function clearMake(){
   var pr=G.problem; if(G.solved)return;

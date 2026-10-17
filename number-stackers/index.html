@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Number Stackers — Math Game for Kids</title>
 <meta name="description" content="A bright, friendly math game for little learners. Stack numbers up and down, carry and borrow, learn times tables, division and telling time. Pass-and-play, works offline.">
 <meta name="theme-color" content="#12b886">
@@ -500,10 +500,11 @@ function genTime(t){
   var correct=fmtTime(h,m);
   // distractors
   var opts=[correct]; var tries=0;
-  while(opts.length<3 && tries<40){tries++; var dh=h, dm=m;
-    if(Math.random()<0.5) dh=((h-1+ri(1,2))%12)+1; else dm=pick(mins);
+  while(opts.length<3 && tries<80){tries++; var dh=h, dm=m;
+    if(Math.random()<0.5) dh=((h-1+ri(1,11))%12)+1; else dm=pick(mins);
     var cand=fmtTime(dh,dm); if(opts.indexOf(cand)<0) opts.push(cand);
   }
+  for(var gh=1; opts.length<3 && gh<=12; gh++){ var gc=fmtTime(gh,m); if(opts.indexOf(gc)<0) opts.push(gc); } // guarantee 3
   shuffle(opts);
   return {kind:"choose",skill:"time",prompt:"What time is it? 🕐",visual:{type:"clock",h:h,m:m},
     options:opts,correctIndex:opts.indexOf(correct),say:"What time does the clock show?"};
@@ -639,7 +640,7 @@ function padPress(key){
 }
 function checkBuild(){
   var pr=G.problem; if(G.solved)return;
-  if(pr._val===pr.answerStr){ winTurn(3-(pr._wrong||0>1?1:0)); return; }
+  if(pr._val===pr.answerStr){ winTurn(pr._wrong>0?2:3); return; }
   if(pr._val.length<pr._boxes){ toast("Fill all the boxes 😊"); return; }
   pr._wrong=(pr._wrong||0)+1;
   $("#ansrow").classList.add("shake"); setTimeout(function(){$("#ansrow").classList.remove("shake");},520);
@@ -659,7 +660,7 @@ function renderChoices(pr){
 }
 function chooseAns(i,btn){
   var pr=G.problem; if(G.solved)return;
-  if(i===pr.correctIndex){ btn.classList.add("good"); winTurn(3-(pr._wrong||0>0?1:0)); }
+  if(i===pr.correctIndex){ btn.classList.add("good"); winTurn(pr._wrong>0?2:3); }
   else{ btn.classList.add("bad"); pr._wrong=(pr._wrong||0)+1; sSoft(); toast(pick(["Not that one — try again! 😊","Good try! Look again 👀","Almost! Pick another 👍"])); speak("Try again!"); }
 }
 

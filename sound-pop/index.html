@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Sound Pop — Phonics Game for Kids</title>
 <meta name="description" content="A bright, friendly phonics game. Listen and pop the bubble — letters, beginning and ending sounds, and rhymes. Pass-and-play, talking, works offline.">
 <meta name="theme-color" content="#ff5d8f">
@@ -281,19 +281,50 @@ var TIER_SKILLS={1:["letter","begin"],2:["begin","end","rhyme"],3:["begin","end"
 var TIER_NAME={1:"Little Listener",2:"Sound Finder",3:"Rhyme Star"};
 
 /* words: [word, emoji] — first/last letter derived */
+/* Words are chosen so the FIRST letter = the first sound (no sh/ch/th/wh digraphs, no soft c/g),
+   and the ending-sound pool is filtered to clean final consonants in genBeginEnd. */
 var WORDS=[
- ["cat","🐱"],["dog","🐶"],["sun","☀️"],["hat","🎩"],["pig","🐷"],["bus","🚌"],["fish","🐟"],["ball","⚽"],
- ["book","📖"],["star","⭐"],["moon","🌙"],["duck","🦆"],["milk","🥛"],["leaf","🍃"],["lion","🦁"],["bear","🐻"],
- ["goat","🐐"],["ring","💍"],["sock","🧦"],["bell","🔔"],["web","🕸️"],["fan","🪭"],["van","🚐"],["bed","🛏️"],
- ["box","📦"],["cup","🥤"],["egg","🥚"],["ant","🐜"],["owl","🦉"],["jam","🍓"],["nut","🥜"],["net","🥅"],
- ["rat","🐀"],["mug","☕"],["pen","🖊️"],["bug","🐛"],["frog","🐸"],["snake","🐍"]
+ ["cat","🐱"],["dog","🐶"],["pig","🐷"],["cow","🐮"],["hen","🐔"],["fox","🦊"],["bug","🐛"],["bee","🐝"],
+ ["bat","🦇"],["rat","🐀"],["ram","🐏"],["fish","🐟"],["frog","🐸"],["bird","🐦"],["duck","🦆"],["lion","🦁"],
+ ["bear","🐻"],["goat","🐐"],["crab","🦀"],["seal","🦭"],["wolf","🐺"],["deer","🦌"],["mouse","🐭"],["snake","🐍"],
+ ["snail","🐌"],["panda","🐼"],["tiger","🐯"],["zebra","🦓"],["koala","🐨"],["rabbit","🐰"],["parrot","🦜"],["camel","🐫"],
+ ["horse","🐴"],["egg","🥚"],["nut","🥜"],["bun","🍞"],["ham","🍖"],["corn","🌽"],["milk","🥛"],["meat","🥩"],
+ ["pear","🍐"],["bread","🍞"],["lemon","🍋"],["melon","🍈"],["donut","🍩"],["carrot","🥕"],["salad","🥗"],["bacon","🥓"],
+ ["grape","🍇"],["hat","🎩"],["bed","🛏️"],["box","📦"],["cup","🥤"],["bus","🚌"],["map","🗺️"],["pen","🖊️"],
+ ["net","🥅"],["mug","☕"],["fan","🪭"],["van","🚐"],["web","🕸️"],["log","🪵"],["bag","🎒"],["bell","🔔"],
+ ["ball","⚽"],["book","📖"],["drum","🥁"],["boat","⛵"],["flag","🚩"],["lamp","💡"],["ring","💍"],["sock","🧦"],
+ ["clock","🕐"],["train","🚂"],["truck","🚚"],["doll","🪆"],["gift","🎁"],["tent","⛺"],["nest","🪹"],["kite","🪁"],
+ ["jet","✈️"],["key","🔑"],["sun","☀️"],["moon","🌙"],["star","⭐"],["tree","🌳"],["rain","🌧️"],["leaf","🍃"],
+ ["rock","🪨"],["hill","⛰️"],["cloud","☁️"],["snow","❄️"],["arm","💪"],["leg","🦵"],["lip","👄"],["hand","✋"],
+ ["foot","🦶"],["nose","👃"],["ant","🐜"],["owl","🦉"]
 ];
-/* rhyme pairs: [wordA, emojiA, wordB, emojiB] */
+/* rhyme pairs: [wordA, emojiA, wordB, emojiB, family]. Distractors come only from OTHER families,
+   so a rhyme question never has two correct answers. */
 var RHYMES=[
- ["cat","🐱","hat","🎩"],["dog","🐶","log","🪵"],["sun","☀️","bun","🍞"],["star","⭐","car","🚗"],
- ["bell","🔔","shell","🐚"],["tree","🌳","bee","🐝"],["cake","🍰","snake","🐍"],["ball","⚽","wall","🧱"],
- ["moon","🌙","spoon","🥄"],["fox","🦊","box","📦"],["goat","🐐","boat","⛵"],["bed","🛏️","sled","🛷"],
- ["ring","💍","king","👑"],["duck","🦆","truck","🚚"],["cap","🧢","map","🗺️"],["frog","🐸","dog","🐶"]
+ ["cat","🐱","hat","🎩","at"],["bat","🦇","rat","🐀","at"],
+ ["dog","🐶","log","🪵","og"],["frog","🐸","hog","🐗","og"],
+ ["sun","☀️","bun","🍞","un"],["run","🏃","fun","🎉","un"],
+ ["star","⭐","car","🚗","ar"],["jar","🫙","bar","🍫","ar"],
+ ["tree","🌳","bee","🐝","ee"],["key","🔑","pea","🫛","ee"],
+ ["cake","🍰","snake","🐍","ake"],["lake","🏞️","rake","🧹","ake"],
+ ["ball","⚽","wall","🧱","all"],
+ ["mop","🧹","top","🔝","op"],["hop","🐰","pop","🍭","op"],
+ ["fox","🦊","box","📦","ox"],
+ ["bell","🔔","shell","🐚","ell"],
+ ["bed","🛏️","sled","🛷","ed"],["red","🟥","bread","🍞","ed"],
+ ["ring","💍","king","👑","ing"],["swing","🛝","wing","🪽","ing"],
+ ["bug","🐛","rug","🧶","ug"],["mug","☕","jug","🫙","ug"],
+ ["pig","🐷","wig","💇","ig"],
+ ["hand","✋","band","🥁","and"],
+ ["train","🚂","rain","🌧️","ain"],["chain","⛓️","brain","🧠","ain"],
+ ["moon","🌙","spoon","🥄","oon"],
+ ["cap","🧢","map","🗺️","ap"],["nap","😴","tap","🚰","ap"],
+ ["mouse","🐭","house","🏠","ouse"],
+ ["clock","🕐","sock","🧦","ock"],["rock","🪨","block","🧱","ock"],
+ ["bear","🐻","pear","🍐","air"],
+ ["rose","🌹","nose","👃","ose"],
+ ["goat","🐐","boat","⛵","oat"],["coat","🧥","float","🎈","oat"],
+ ["duck","🦆","truck","🚚","uck"]
 ];
 /* letter -> short sound + example */
 var SOUNDS={a:"ah",b:"buh",c:"kuh",d:"duh",e:"eh",f:"ff",g:"guh",h:"huh",i:"ih",j:"juh",k:"kuh",l:"ll",m:"mm",n:"nn",o:"ah",p:"puh",q:"kwuh",r:"rr",s:"sss",t:"tuh",u:"uh",v:"vv",w:"wuh",x:"ks",y:"yuh",z:"zz"};
@@ -460,8 +491,10 @@ function genLetter(t){
     say:"Find the letter "+L.toUpperCase(), correctCh:L};
 }
 function genBeginEnd(t,which){
-  var list=WORDS.slice();
-  if(which==="end") list=list.filter(function(w){return !/[aeiou]$/.test(w[0]);});
+  var list;
+  if(which==="begin") list=WORDS.filter(function(w){ return /^[bcdfghjklmnpqrstvwyz]/.test(w[0]); }); // consonant onset = clean first sound
+  else list=WORDS.filter(function(w){ return /[bdfgklmnprstvz]$/.test(w[0]) && !/(ng|nk)$/.test(w[0]); }); // clean final consonant sound (no sh/ng/nk/x/silent-e/y)
+  if(!list.length) list=WORDS.slice();
   var w=pick(list); var word=w[0];
   var correct = which==="begin"? word[0] : word[word.length-1];
   var n=nBub(t);
@@ -472,12 +505,13 @@ function genBeginEnd(t,which){
     options:opts, say:word+". "+word+(which==="begin"?" starts with ":" ends with ")+snd+".", correctCh:correct, snd:snd};
 }
 function genRhyme(t){
-  var pr=pick(RHYMES); var a=pr[0],ea=pr[1],b=pr[2],eb=pr[3];
-  // distractors from other pairs that don't rhyme with a or b
-  var pool=[]; RHYMES.forEach(function(r){ if(r[0]!==a){ pool.push([r[0],r[1]]); } if(r[2]!==b && r[2]!==a){ pool.push([r[2],r[3]]); } });
+  var pr=pick(RHYMES); var a=pr[0],ea=pr[1],b=pr[2],eb=pr[3],fam=pr[4];
+  // distractors come ONLY from other rhyme families (never rhyme with the target) and are de-duped
+  var pool=[], seen={}; seen[a]=1; seen[b]=1;
+  RHYMES.forEach(function(r){ if(r[4]===fam) return; [[r[0],r[1]],[r[2],r[3]]].forEach(function(x){ if(!seen[x[0]]){ seen[x[0]]=1; pool.push(x); } }); });
   shuffle(pool);
   var opts=[{w:b,e:eb,correct:true}];
-  for(var i=0;i<pool.length && opts.length<3;i++){ if(pool[i][0]!==b) opts.push({w:pool[i][0],e:pool[i][1],correct:false}); }
+  for(var i=0;i<pool.length && opts.length<3;i++){ opts.push({w:pool[i][0],e:pool[i][1],correct:false}); }
   shuffle(opts);
   return {type:"rhyme",kind:"pics",pic:ea,word:a,prompt:"Which one RHYMES with “"+a+"”? 🎵",
     options:opts, say:"Which word rhymes with "+a+"?", correctWord:b};

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Pattern Party — Shapes &amp; Patterns Game for Kids</title>
 <meta name="description" content="A bright, friendly shapes, colors and patterns game. Find the shape, find the color, and solve what-comes-next. Pass-and-play, talking, works offline.">
 <meta name="theme-color" content="#2f80ed">
@@ -438,7 +438,6 @@ function genProblem(p){
 function genShape(t){
   var target=pick(SHAPES); var n=nOpt(t);
   var others=SHAPES.filter(function(s){return s!==target;}); others=sampleDistinct(others,n-1);
-  var col=pick(PAL).hex;
   var opts=[{shape:target,color:pick(PAL).hex,correct:true}];
   others.forEach(function(s){opts.push({shape:s,color:pick(PAL).hex,correct:false});});
   shuffle(opts);
@@ -446,7 +445,8 @@ function genShape(t){
 }
 function genColor(t){
   var tc=pick(PAL); var n=nOpt(t);
-  var others=PAL.filter(function(c){return c.n!==tc.n;}); others=sampleDistinct(others,n-1);
+  var confuse={red:"pink",pink:"red"}; // keep look-alike colors out of the same question
+  var others=PAL.filter(function(c){return c.n!==tc.n && c.n!==confuse[tc.n];}); others=sampleDistinct(others,n-1);
   var shp=pick(SHAPES);
   var opts=[{shape:shp,color:tc.hex,correct:true}];
   others.forEach(function(c){opts.push({shape:pick(SHAPES),color:c.hex,correct:false});});
@@ -466,8 +466,12 @@ function genPattern(t){
   var shownLen = unit.length*2 + ri(0,unit.length-1);
   var seq=[]; for(var i=0;i<shownLen;i++){ seq.push(elems[unit[i%unit.length]]); }
   var answerElem = elems[unit[shownLen % unit.length]];
-  // options = the distinct elements, shuffled
-  var opts=elems.map(function(e,i){return {shape:e.shape,color:e.color,correct:(e===answerElem)};});
+  // options = the distinct pattern elements + a decoy so binary patterns aren't a 50/50 guess
+  var opts=elems.map(function(e){return {shape:e.shape,color:e.color,correct:(e===answerElem)};});
+  if(opts.length<3){
+    if(useShape){ var sp=SHAPES.filter(function(s){ return !elems.some(function(e){return e.shape===s;}); }); if(sp.length) opts.push({shape:pick(sp),color:elems[0].color,correct:false}); }
+    else { var cp=PAL.filter(function(c){ return !elems.some(function(e){return e.color===c.hex;}); }); if(cp.length) opts.push({shape:elems[0].shape,color:pick(cp).hex,correct:false}); }
+  }
   shuffle(opts);
   return {type:"pattern",prompt:"What comes next? 🔁",say:"What comes next in the pattern?",seq:seq,options:opts,kind:"shapes"};
 }

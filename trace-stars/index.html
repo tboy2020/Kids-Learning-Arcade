@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Trace Stars — Handwriting Game for Kids</title>
 <meta name="description" content="A bright, friendly handwriting game. Trace letters, numbers and shapes with your finger by connecting the glowing dots. Pass-and-play, talking, works offline.">
 <meta name="theme-color" content="#f2760c">
@@ -92,7 +92,7 @@ p.lead{font-size:clamp(16px,4.4vw,21px); color:var(--ink-soft); margin:.4em 0 1e
 .roundtag{font-size:14px; opacity:.9; font-weight:800;}
 .prompt{font-size:clamp(18px,5vw,24px); font-weight:800; margin:6px 0;}
 .canvas-wrap{display:flex; justify-content:center; margin:8px auto;}
-#pad{background:#fff; border:4px solid var(--card-edge); border-radius:24px; box-shadow:var(--shadow); touch-action:none; cursor:crosshair;}
+#pad{background:#fff; border:4px solid var(--card-edge); border-radius:24px; box-shadow:var(--shadow); touch-action:none; cursor:crosshair; box-sizing:content-box;}
 .saybtns{display:flex; gap:10px; justify-content:center; margin:8px 0;}
 .game-actions{display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:10px;}
 #pass{position:fixed; inset:0; z-index:40; display:none; place-items:center; background:var(--pc); color:var(--pc-ink); text-align:center; padding:24px;}
@@ -292,6 +292,24 @@ var NUMWORDS={"0":"zero","1":"one","2":"two","3":"three","4":"four","5":"five","
 var LETTERS="ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 var NUMBERS="0123456789".split("");
 var SHAPES_K=["shape_circle","shape_square","shape_triangle","shape_star","shape_heart"];
+var LETTERS_LOWER="abcdefghijklmnopqrstuvwxyz".split("");
+/* lowercase letterforms (same 0-100 box, "x,y ...|stroke2") */
+var LOWER={
+ a:"68,44 54,38 40,46 38,60 50,72 66,66|68,40 68,72", b:"32,14 32,74|32,52 50,44 66,56 50,72 32,66",
+ c:"68,46 52,38 38,48 36,62 50,74 70,66", d:"68,14 68,74|68,52 50,44 34,56 50,72 68,66",
+ e:"38,58 68,58 64,46 50,38 38,48 38,62 52,74 70,66", f:"66,20 54,14 46,24 46,76|34,46 60,46",
+ g:"68,44 52,38 38,46 38,60 52,72 68,66|68,40 68,80 54,90 38,86", h:"34,14 34,74|34,52 50,44 64,56 64,74",
+ i:"50,42 50,74|50,24 50,28", j:"60,42 60,80 48,90 36,84|60,24 60,28",
+ k:"36,14 36,74|62,46 38,58|46,54 64,74", l:"48,14 48,68 58,74",
+ m:"30,74 30,48 42,44 50,52 50,74|50,52 60,44 70,52 70,74", n:"34,74 34,48 48,44 62,54 62,74",
+ o:"52,42 38,50 36,60 50,72 64,66 68,54 58,44 52,42", p:"32,46 32,90|32,52 52,44 66,56 50,72 32,66",
+ q:"68,46 68,90|68,52 50,44 34,56 50,72 68,66", r:"36,74 36,48 48,44 64,50",
+ s:"66,48 52,42 42,48 52,58 62,64 52,72 38,68", t:"48,28 48,70 58,76|36,46 60,46",
+ u:"34,44 34,66 46,74 60,70 64,62|64,44 64,74", v:"34,44 50,74 66,44",
+ w:"30,44 42,74 50,54 58,74 70,44", x:"36,44 64,74|64,44 36,74",
+ y:"34,44 50,70 66,44|50,70 44,90 32,86", z:"36,48 64,48 36,72 64,72"
+};
+for(var _lk in LOWER){ if(LOWER.hasOwnProperty(_lk)) GLYPHS[_lk]=LOWER[_lk]; }
 
 var S={count:2,rounds:6,players:[],skills:{}};
 var opt={tts:true,sfx:true};
@@ -404,6 +422,7 @@ function startTurn(){
 }
 function beginTurn(){
   resumeAudio(); $("#pass").classList.remove("show");
+  if(demoTimer){ clearInterval(demoTimer); demoTimer=null; }
   var p=curPlayer();
   $("#turnbanner").innerHTML="🎯 It's <b>"+escapeHTML(p.name)+"</b>'s turn! <span class='roundtag'>· Round "+curRound()+"/"+G.rounds+"</span>";
   G.problem=genProblem(p); setupCanvas(); renderProblem();
@@ -430,7 +449,11 @@ function parseStrokes(str){return str.split("|").map(function(s){return s.trim()
 function genProblem(p){
   var sk=skillsForPlayer(p); var cat=pick(sk);
   var key, label, say;
-  if(cat==="letters"){ key=pick(LETTERS); label=key; say="Trace the letter "+key; }
+  if(cat==="letters"){
+    var lower = (p.tier===1)? false : (p.tier===2? Math.random()<0.5 : Math.random()<0.7);
+    if(lower){ key=pick(LETTERS_LOWER); label=key; say="Trace the little letter "+key.toUpperCase(); }
+    else { key=pick(LETTERS); label=key; say="Trace the big letter "+key; }
+  }
   else if(cat==="numbers"){ key=pick(NUMBERS); label=key; say="Trace the number "+NUMWORDS[key]; }
   else { key=pick(SHAPES_K); label=SHAPE_LABEL[key]; say="Trace the "+label; }
   var strokes=parseStrokes(GLYPHS[key]);
@@ -444,11 +467,13 @@ var pad,ctx,SZ;
 function setupCanvas(){
   pad=$("#pad");
   SZ=Math.max(240, Math.min(340, (window.innerWidth-56)|0));
-  pad.width=SZ; pad.height=SZ; pad.style.width=SZ+"px"; pad.style.height=SZ+"px";
-  ctx=pad.getContext("2d");
+  var dpr=Math.min(window.devicePixelRatio||1, 2);   // crisp on high-DPR phones
+  pad.width=Math.round(SZ*dpr); pad.height=Math.round(SZ*dpr); pad.style.width=SZ+"px"; pad.style.height=SZ+"px";
+  ctx=pad.getContext("2d"); ctx.setTransform(dpr,0,0,dpr,0,0);
   pad.onpointerdown=padDown; pad.onpointermove=padMove; pad.onpointerup=padUp; pad.onpointerleave=padUp; pad.onpointercancel=padUp;
 }
-function toXY(e){ var r=pad.getBoundingClientRect(); return {x:(e.clientX-r.left)/SZ*100, y:(e.clientY-r.top)/SZ*100}; }
+// map pointer to 0-100 using the CONTENT box (accounts for the 4px border + any scaling)
+function toXY(e){ var r=pad.getBoundingClientRect(); return {x:(e.clientX-r.left-pad.clientLeft)/pad.clientWidth*100, y:(e.clientY-r.top-pad.clientTop)/pad.clientHeight*100}; }
 function padDown(e){ var pr=G.problem; if(!pr||pr.done)return; pr.drawing=true; try{pad.setPointerCapture(e.pointerId);}catch(_){}
   var pt=toXY(e); pr.ink.push([pt]); checkHit(pt); redraw(); }
 function padMove(e){ var pr=G.problem; if(!pr||!pr.drawing||pr.done)return; var pt=toXY(e); pr.ink[pr.ink.length-1].push(pt); checkHit(pt); redraw(); }
@@ -483,7 +508,7 @@ function redraw(){
   ctx.beginPath(); ctx.arc(sc(s0.x),sc(s0.y),SZ*0.05,0,6.29); ctx.lineWidth=4; ctx.strokeStyle=s0.lit?pc:"#1aa179"; ctx.stroke();
   if(!s0.lit){ ctx.fillStyle="#1aa179"; ctx.font="bold "+(SZ*0.05)+"px sans-serif"; ctx.textAlign="center"; ctx.textBaseline="middle"; ctx.fillText("▶", sc(s0.x), sc(s0.y)); }
 }
-function clearTrace(){ var pr=G.problem; if(!pr||pr.done)return; pr.ink=[]; pr.wpts.forEach(function(w){w.lit=false;}); pr.drawing=false; sTap(); redraw(); }
+function clearTrace(){ var pr=G.problem; if(!pr||pr.done)return; if(demoTimer){clearInterval(demoTimer);demoTimer=null;} pr.ink=[]; pr.wpts.forEach(function(w){w.lit=false;}); pr.drawing=false; sTap(); redraw(); }
 function completeTrace(){
   var pr=G.problem; if(pr.done)return; pr.done=true; pr.drawing=false;
   // flourish: draw the glyph thick in player color
@@ -559,6 +584,7 @@ function boot(){
   var unlock=function(){resumeAudio(); try{pickVoice();}catch(e){}};
   document.addEventListener("pointerdown",unlock,{once:true}); document.addEventListener("touchstart",unlock,{once:true});
   $$(".overlay").forEach(function(o){o.addEventListener("click",function(e){if(e.target===o)o.classList.remove("show");});});
+  var _rz; addEventListener("resize", function(){ clearTimeout(_rz); _rz=setTimeout(function(){ if($("#game").classList.contains("active") && G && G.problem && !G.problem.done){ setupCanvas(); redraw(); } }, 160); });
   if("serviceWorker" in navigator && location.protocol.indexOf("http")===0){navigator.serviceWorker.register("../sw.js").catch(function(){});}
 }
 boot();

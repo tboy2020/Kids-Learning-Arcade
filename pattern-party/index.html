@@ -377,7 +377,7 @@ function markTut(){try{localStorage.setItem("pp_tut","1");}catch(e){}}
 function curPlayer(){return G.players[G.turnCount%G.players.length];}
 function curRound(){return Math.floor(G.turnCount/G.players.length)+1;}
 function applyColor(p){var r=document.documentElement.style; r.setProperty("--pc",p.color.hex); r.setProperty("--pc-ink",p.color.ink); r.setProperty("--pc-soft",p.color.soft);}
-function startTurn(){
+function startTurn(){if(!$("#game").classList.contains("active"))return;
   if(G.turnCount>=G.total){endGame();return;}
   var p=curPlayer(); applyColor(p); renderScoreboard();
   $("#passEmoji").textContent=["🌟","🎉","🚀","🦄","🐥","🎈"][G.turnCount%6];
@@ -501,7 +501,7 @@ function choose(o,btn){
     G.problem._wrong=(G.problem._wrong||0)+1;
     toast(pick(["Good try! Look again 👀","Not that one — try again! 😊","Almost! You can do it 🌈"])); speak("Try again!"); }
 }
-function winTurn(){
+function winTurn(){if(!$("#game").classList.contains("active"))return;
   var pr=G.problem, p=curPlayer();
   var stars=pr._wrong>0?2:3;
   var base=pr.type==="pattern"?15:12;
@@ -525,7 +525,7 @@ function hint(){
 }
 function sayProblem(){var pr=G.problem; if(pr) speak(pr.say,0.95);}
 
-function endGame(){
+function endGame(){if(!$("#game").classList.contains("active"))return;
   try{window.speechSynthesis.cancel();}catch(e){}
   var ranked=G.players.slice().sort(function(a,b){return b.score-a.score||b.stars-a.stars;});
   var top=ranked[0].score; var winners=ranked.filter(function(p){return p.score===top;}); var tie=winners.length>1;

@@ -439,6 +439,7 @@ function curPlayer(){return G.players[G.turnCount%G.players.length];}
 function curRound(){return Math.floor(G.turnCount/G.players.length)+1;}
 function applyColor(p){var r=document.documentElement.style; r.setProperty("--pc",p.color.hex); r.setProperty("--pc-ink",p.color.ink); r.setProperty("--pc-soft",p.color.soft);}
 function startTurn(){
+  if(!$("#game").classList.contains("active"))return;
   if(G.turnCount>=G.total){endGame();return;}
   var p=curPlayer(); applyColor(p); renderScoreboard();
   $("#passEmoji").textContent=["🌟","🎉","🚀","🦄","🐥","🎈"][G.turnCount%6];
@@ -747,7 +748,7 @@ function colPress(d){
 }
 
 /* ---------- WIN TURN ---------- */
-function winTurn(stars){
+function winTurn(stars){if(!$("#game").classList.contains("active"))return;
   var pr=G.problem, p=curPlayer(); if(G.solved)return; G.solved=true;
   stars=Math.max(1,Math.min(3,stars||1));
   var base=10; if(pr.kind==="column") base=20+ (pr.ncols-1)*5; else if(pr.skill==="mul"||pr.skill==="div") base=18; else base=12;
@@ -784,7 +785,7 @@ function hint(){
 function sayProblem(){var pr=G.problem; if(pr) speak(pr.say||pr.prompt, pr.kind==="column"?0.95:0.95);}
 
 /* ---------- WIN ---------- */
-function endGame(){
+function endGame(){if(!$("#game").classList.contains("active"))return;
   try{window.speechSynthesis.cancel();}catch(e){}
   var ranked=G.players.slice().sort(function(a,b){return b.score-a.score||b.stars-a.stars;});
   var top=ranked[0].score; var winners=ranked.filter(function(p){return p.score===top;}); var tie=winners.length>1;

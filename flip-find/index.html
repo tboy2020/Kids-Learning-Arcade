@@ -396,7 +396,7 @@ function flip(c){
   if(G.first===null){ G.first=c; }
   else { G.second=c; G.busy=true; renderBoard(); setTimeout(resolve,750); }
 }
-function resolve(){
+function resolve(){if(!$("#game").classList.contains("active"))return;
   var a=G.first,b=G.second, p=curPlayer();
   if(a.pid===b.pid){
     a.state="matched"; b.state="matched"; a.by=p.color; b.by=p.color;
@@ -412,7 +412,7 @@ function resolve(){
     toast("Next: "+curPlayer().name+" 👉");
   }
 }
-function endGame(){
+function endGame(){if(!$("#game").classList.contains("active"))return;
   try{window.speechSynthesis.cancel();}catch(e){}
   var ranked=G.players.slice().sort(function(a,b){return b.score-a.score;});
   var top=ranked[0].score; var winners=ranked.filter(function(p){return p.score===top;}); var tie=winners.length>1;

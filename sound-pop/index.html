@@ -454,8 +454,8 @@ function beginTurn(){
   if(!G.firstTut){G.firstTut=true; markTut(); setTimeout(openHow,400);}
   setTimeout(sayProblem,500);
 }
-function endTurn(){G.turnCount++; if(G.turnCount>=G.total) setTimeout(endGame,700); else setTimeout(startTurn,700);}
-function skipTurn(){sSoft(); speak("That's okay! Next player."); toast("No worries — next turn! 😊"); endTurn();}
+function endTurn(){if(G.ending)return; G.ending=true; G.turnCount++; if(G.turnCount>=G.total) setTimeout(function(){G.ending=false; endGame();},700); else setTimeout(function(){G.ending=false; startTurn();},700);}
+function skipTurn(){if(G.ending)return; sSoft(); speak("That's okay! Next player."); toast("No worries — next turn! 😊"); endTurn();}
 
 function renderScoreboard(){
   var host=$("#scorebar"); host.innerHTML="";
@@ -478,8 +478,9 @@ function genProblem(p){
   if(k==="end") return genBeginEnd(t,"end");
   return genBeginEnd(t,"begin");
 }
-function distractLetters(correct,n){
-  var out=[], pool=ALPHA.split("").filter(function(c){return c!==correct;});
+function distractLetters(correct,n,forbid){
+  forbid=forbid||{};
+  var out=[], pool=ALPHA.split("").filter(function(c){return c!==correct && !forbid[c];});
   shuffle(pool);
   for(var i=0;i<n && i<pool.length;i++) out.push(pool[i]);
   return out;
@@ -498,7 +499,8 @@ function genBeginEnd(t,which){
   var w=pick(list); var word=w[0];
   var correct = which==="begin"? word[0] : word[word.length-1];
   var n=nBub(t);
-  var opts=[{ch:correct,correct:true}]; distractLetters(correct,n-1).forEach(function(c){opts.push({ch:c,correct:false});}); shuffle(opts);
+  var snd0=SOUNDS[correct], forbid={}; for(var LL in SOUNDS){ if(SOUNDS[LL]===snd0 && LL!==correct) forbid[LL]=1; } // no two bubbles share a sound (e.g. c & k both say "kuh")
+  var opts=[{ch:correct,correct:true}]; distractLetters(correct,n-1,forbid).forEach(function(c){opts.push({ch:c,correct:false});}); shuffle(opts);
   var snd=SOUNDS[correct]||correct;
   return {type:which,kind:"letters",pic:w[1],word:word,
     prompt:(which==="begin"?"What sound does it START with? 👂":"What sound does it END with? 🔚"),
@@ -510,8 +512,8 @@ function genRhyme(t){
   var pool=[], seen={}; seen[a]=1; seen[b]=1;
   RHYMES.forEach(function(r){ if(r[4]===fam) return; [[r[0],r[1]],[r[2],r[3]]].forEach(function(x){ if(!seen[x[0]]){ seen[x[0]]=1; pool.push(x); } }); });
   shuffle(pool);
-  var opts=[{w:b,e:eb,correct:true}];
-  for(var i=0;i<pool.length && opts.length<3;i++){ opts.push({w:pool[i][0],e:pool[i][1],correct:false}); }
+  var opts=[{w:b,e:eb,correct:true}]; var usedE={}; usedE[eb]=1; usedE[ea]=1;
+  for(var i=0;i<pool.length && opts.length<3;i++){ if(usedE[pool[i][1]])continue; usedE[pool[i][1]]=1; opts.push({w:pool[i][0],e:pool[i][1],correct:false}); }
   shuffle(opts);
   return {type:"rhyme",kind:"pics",pic:ea,word:a,prompt:"Which one RHYMES with “"+a+"”? 🎵",
     options:opts, say:"Which word rhymes with "+a+"?", correctWord:b};

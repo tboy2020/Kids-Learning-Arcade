@@ -612,8 +612,8 @@ function beginTurn(){
   if(!G.firstTut){G.firstTut=true; markTut(); setTimeout(openHow,400);}
   setTimeout(sayTarget,450);
 }
-function endTurn(){G.turnCount++; var who=G.turnCount; if(G.turnCount>=G.total) setTimeout(function(){if(G&&G.turnCount===who)endGame();},900); else setTimeout(function(){if(G&&G.turnCount===who)startTurn();},900);}
-function skipTurn(){sSoft(); speak("That's okay! Next player."); toast("No worries — next turn! 😊"); endTurn();}
+function endTurn(){if(G.ending)return; G.ending=true; G.turnCount++; var who=G.turnCount; if(G.turnCount>=G.total) setTimeout(function(){if(G&&G.turnCount===who){G.ending=false; endGame();}},900); else setTimeout(function(){if(G&&G.turnCount===who){G.ending=false; startTurn();}},900);}
+function skipTurn(){if(G.ending)return; sSoft(); speak("That's okay! Next player."); toast("No worries — next turn! 😊"); endTurn();}
 
 function renderScoreboard(){
   var host=$("#scorebar"); host.innerHTML="";

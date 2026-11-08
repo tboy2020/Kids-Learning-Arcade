@@ -395,6 +395,7 @@ function curPlayer(){return G.players[G.turnCount%G.players.length];}
 function curRound(){return Math.floor(G.turnCount/G.players.length)+1;}
 function applyColor(p){var r=document.documentElement.style; r.setProperty("--pc",p.color.hex); r.setProperty("--pc-ink",p.color.ink); r.setProperty("--pc-soft",p.color.soft);}
 function startTurn(){
+  G.ending=false;
   if(G.turnCount>=G.total){endGame();return;}
   seqToken++;
   var p=curPlayer(); applyColor(p); renderScoreboard();
@@ -410,10 +411,11 @@ function beginTurn(){
   var p=curPlayer();
   $("#turnbanner").innerHTML="🎯 It's <b>"+escapeHTML(p.name)+"</b>'s turn! <span class='roundtag'>· Round "+curRound()+"/"+G.rounds+"</span>";
   G.problem=genProblem(p); G.solved=false; renderProblem();
+  setTimeout(sayProblem,500);
   if(!G.firstTut){G.firstTut=true; markTut(); setTimeout(openHow,400);}
 }
-function endTurn(){seqToken++; G.turnCount++; var tok=seqToken; if(G.turnCount>=G.total) setTimeout(function(){if(seqToken!==tok)return; endGame();},800); else setTimeout(function(){if(seqToken!==tok)return; startTurn();},800);}
-function skipTurn(){seqToken++; sSoft(); speak("That's okay! Next player."); toast("No worries — next turn! 😊"); endTurn();}
+function endTurn(){if(G.ending)return; G.ending=true; seqToken++; G.turnCount++; var tok=seqToken; if(G.turnCount>=G.total) setTimeout(function(){if(seqToken!==tok)return; endGame();},800); else setTimeout(function(){if(seqToken!==tok)return; startTurn();},800);}
+function skipTurn(){if(G.ending)return; seqToken++; sSoft(); speak("That's okay! Next player."); toast("No worries — next turn! 😊"); endTurn();}
 
 function renderScoreboard(){
   var host=$("#scorebar"); host.innerHTML="";
@@ -430,6 +432,7 @@ function ri(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
 function pick(a){return a[Math.floor(Math.random()*a.length)];}
 function genProblem(p){
   var sk=skillsForPlayer(p); var k=pick(sk); var t=p.tier;
+  if(k==="highlow" && !opt.sfx) k="repeat";   // high/low is audio-only; with "Music sounds" off it would be a blind guess
   if(k==="song") return genSong(t);
   if(k==="highlow") return genHighLow(t);
   return genRepeat(t);

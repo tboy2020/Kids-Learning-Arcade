@@ -300,6 +300,8 @@ var ANIMALS=[
 ];
 var FOODS_PLANT=[["grass","🌿"],["corn","🌽"],["seeds","🌱"],["hay","🌾"],["leaves","🍃"],["bananas","🍌"],["carrots","🥕"],["nuts","🥜"],["bamboo","🎍"],["fruit","🍓"],["nectar","🌸"]];
 var FOODS_MEAT=[["fish","🐟"],["a bone","🦴"],["worms","🪱"],["krill","🦐"],["meat","🍖"],["eggs","🥚"],["mice","🐭"],["seals","🦭"],["bugs","🐛"],["crabs","🦀"]];
+/* omnivores — excluded from "what does it eat" so a wrong (opposite-diet) option is never a food they really eat */
+var OMNIVORES={dog:1,mouse:1,pig:1,hen:1,monkey:1,bear:1,fox:1,duck:1};
 var HABITATS={home:["home","🏠"],farm:["farm","🚜"],ocean:["ocean","🌊"],grassland:["grassland","🌾"],jungle:["jungle","🌴"],forest:["forest","🌲"],ice:["ice","❄️"],desert:["desert","🏜️"],garden:["garden","🌻"],pond:["pond","🪷"]};
 /* habitat families — distractors never share the correct habitat's family, so grazing/pet animals aren't marked wrong */
 var HABGROUP={home:"home",farm:"green",grassland:"green",garden:"green",forest:"trees",jungle:"trees",ocean:"water",pond:"water",ice:"ice",desert:"desert"};
@@ -415,6 +417,8 @@ function curPlayer(){return G.players[G.turnCount%G.players.length];}
 function curRound(){return Math.floor(G.turnCount/G.players.length)+1;}
 function applyColor(p){var r=document.documentElement.style; r.setProperty("--pc",p.color.hex); r.setProperty("--pc-ink",p.color.ink); r.setProperty("--pc-soft",p.color.soft);}
 function startTurn(){
+  if(!$("#game").classList.contains("active"))return;
+  G.ending=false;
   if(G.turnCount>=G.total){endGame();return;}
   var p=curPlayer(); applyColor(p); renderScoreboard();
   $("#passEmoji").textContent=["🌟","🎉","🚀","🦄","🐥","🎈"][G.turnCount%6];
@@ -431,8 +435,8 @@ function beginTurn(){
   if(!G.firstTut){G.firstTut=true; markTut(); setTimeout(openHow,400);}
   setTimeout(sayProblem,500);
 }
-function endTurn(){G.turnCount++; if(G.turnCount>=G.total) setTimeout(endGame,800); else setTimeout(startTurn,800);}
-function skipTurn(){sSoft(); speak("That's okay! Next player."); toast("No worries — next turn! 😊"); endTurn();}
+function endTurn(){if(G.ending)return; G.ending=true; G.turnCount++; if(G.turnCount>=G.total) setTimeout(endGame,800); else setTimeout(startTurn,800);}
+function skipTurn(){if(G.ending)return; sSoft(); speak("That's okay! Next player."); toast("No worries — next turn! 😊"); endTurn();}
 
 function renderScoreboard(){
   var host=$("#scorebar"); host.innerHTML="";
@@ -467,7 +471,7 @@ function genHome(t){
   return {kind:"choose",pic:a[1],prompt:"Where does the "+a[0]+" live? 🏠",options:opts,say:"Where does the "+a[0]+" live?"};
 }
 function genEat(t){
-  var a=pick(ANIMALS); var n=nOpt(t);
+  var a=pick(ANIMALS.filter(function(x){return !OMNIVORES[x[0]];})); var n=nOpt(t);
   var opp=a[3]==="plant"?FOODS_MEAT:FOODS_PLANT;
   var others=sampleDistinct(opp.filter(function(f){return f[0]!==a[4];}), n-1, function(f){return f[0];});
   var opts=[{e:a[5],label:a[4],correct:true}];
@@ -545,6 +549,7 @@ function tapOrder(tl,btn){
     pr._wrong=(pr._wrong||0)+1; toast(pick(["Which comes first? 🤔","Good try! Start with the baby one 🥚","Almost — try the order again 😊"])); speak("Try again! What comes first?"); }
 }
 function winTurn(){
+  if(!$("#game").classList.contains("active"))return;
   var pr=G.problem, p=curPlayer();
   var stars=pr._wrong>0?2:3;
   var base=pr.kind==="order"?16:12;
@@ -569,7 +574,7 @@ function hint(){
 }
 function sayProblem(){var pr=G.problem; if(pr) speak(pr.say,0.95);}
 
-function endGame(){
+function endGame(){if(!$("#game").classList.contains("active"))return;
   try{window.speechSynthesis.cancel();}catch(e){}
   var ranked=G.players.slice().sort(function(a,b){return b.score-a.score||b.stars-a.stars;});
   var top=ranked[0].score; var winners=ranked.filter(function(p){return p.score===top;}); var tie=winners.length>1;

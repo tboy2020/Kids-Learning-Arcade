@@ -278,7 +278,7 @@ var SKILLS=[
 ];
 var TIER_SKILLS={1:["feel","kind","manners","calm"],2:["feel","kind","manners","calm"],3:["feel","kind","manners","calm"]};
 var TIER_NAME={1:"Little Friend",2:"Kind Buddy",3:"Caring Star"};
-var FEELINGS=[["happy","😊"],["sad","😢"],["angry","😠"],["scared","😨"],["sleepy","😴"],["surprised","😲"],["excited","🤩"],["shy","🙈"],["calm","😌"],["loved","🥰"],["silly","😜"],["crying","😭"]];
+var FEELINGS=[["happy","😊"],["sad","😢"],["angry","😠"],["scared","😨"],["sleepy","😴"],["surprised","😲"],["excited","🤩"],["shy","🙈"],["calm","😌"],["loved","🥰"],["silly","😜"]];
 var KIND=[
  ["Your friend is sad. What is kind?",[["Give a hug 🤗",true],["Laugh at them 😆",false],["Walk away 🚶",false]]],
  ["Your friend fell down. What is kind?",[["Help them up 🤝",true],["Point and giggle 😜",false],["Ignore them 🙈",false]]],
@@ -405,6 +405,8 @@ function curPlayer(){return G.players[G.turnCount%G.players.length];}
 function curRound(){return Math.floor(G.turnCount/G.players.length)+1;}
 function applyColor(p){var r=document.documentElement.style; r.setProperty("--pc",p.color.hex); r.setProperty("--pc-ink",p.color.ink); r.setProperty("--pc-soft",p.color.soft);}
 function startTurn(){
+  if(!$("#game").classList.contains("active"))return;
+  G.ending=false;
   if(calmTimer){clearInterval(calmTimer); calmTimer=null;}
   if(G.turnCount>=G.total){endGame();return;}
   var p=curPlayer(); applyColor(p); renderScoreboard();
@@ -422,8 +424,8 @@ function beginTurn(){
   if(!G.firstTut){G.firstTut=true; markTut(); setTimeout(openHow,400);}
   setTimeout(sayProblem,500);
 }
-function endTurn(){if(calmTimer){clearInterval(calmTimer); calmTimer=null;} G.turnCount++; if(G.turnCount>=G.total) setTimeout(endGame,800); else setTimeout(startTurn,800);}
-function skipTurn(){sSoft(); speak("That's okay! Next player."); toast("No worries — next turn! 😊"); endTurn();}
+function endTurn(){if(G.ending)return; G.ending=true; if(calmTimer){clearInterval(calmTimer); calmTimer=null;} G.turnCount++; if(G.turnCount>=G.total) setTimeout(endGame,800); else setTimeout(startTurn,800);}
+function skipTurn(){if(G.ending)return; sSoft(); speak("That's okay! Next player."); toast("No worries — next turn! 😊"); endTurn();}
 
 function renderScoreboard(){
   var host=$("#scorebar"); host.innerHTML="";
@@ -518,6 +520,7 @@ function choose(o,btn){
     pr._wrong=(pr._wrong||0)+1; toast(pick(["Hmm, let's be kind 💛","Good try — think again 🤔","Which is the kind one? 😊"])); speak("Let's try a kinder choice."); }
 }
 function winTurn(){
+  if(!$("#game").classList.contains("active"))return;
   var pr=G.problem, p=curPlayer();
   var stars=pr._wrong>0?2:3;
   var base=12;
@@ -540,7 +543,7 @@ function hint(){
 }
 function sayProblem(){var pr=G.problem; if(pr) speak(pr.say,0.95);}
 
-function endGame(){
+function endGame(){if(!$("#game").classList.contains("active"))return;
   if(calmTimer){clearInterval(calmTimer); calmTimer=null;}
   try{window.speechSynthesis.cancel();}catch(e){}
   var ranked=G.players.slice().sort(function(a,b){return b.score-a.score||b.stars-a.stars;});

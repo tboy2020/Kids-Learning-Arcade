@@ -420,8 +420,8 @@ function beginTurn(){
   if(!G.firstTut){G.firstTut=true; markTut(); setTimeout(openHow,400);}
   setTimeout(sayProblem,500);
 }
-function endTurn(){G.turnCount++; var tok=++navTok; if(G.turnCount>=G.total) setTimeout(function(){if(navTok!==tok)return; endGame();},900); else setTimeout(function(){if(navTok!==tok)return; startTurn();},900);}
-function skipTurn(){sSoft(); speak("That's okay! Next player."); toast("No worries — next turn! 😊"); endTurn();}
+function endTurn(){if(G.ending)return; G.ending=true; G.turnCount++; var tok=++navTok; if(G.turnCount>=G.total) setTimeout(function(){if(navTok!==tok)return; G.ending=false; endGame();},900); else setTimeout(function(){if(navTok!==tok)return; G.ending=false; startTurn();},900);}
+function skipTurn(){if(G.ending)return; sSoft(); speak("That's okay! Next player."); toast("No worries — next turn! 😊"); endTurn();}
 
 function renderScoreboard(){
   var host=$("#scorebar"); host.innerHTML="";

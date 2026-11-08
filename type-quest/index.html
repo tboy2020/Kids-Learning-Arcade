@@ -596,6 +596,7 @@ function applyColor(p){var r=document.documentElement.style; r.setProperty("--pc
 function startTurn(){if(!$("#game").classList.contains("active"))return;
   if(G.turnCount>=G.total){endGame();return;}
   var p=curPlayer(); applyColor(p); renderScoreboard();
+  if(G.players.length===1){ beginTurn(); return; }   // solo practice: no handoff screen, flow straight to the next word
   $("#passEmoji").textContent=["🌟","🎉","🚀","🦄","🐥","🎈","⭐","💫"][G.turnCount%8];
   $("#passRound").textContent="Round "+curRound()+" of "+G.rounds;
   $("#passTitle").textContent=(G.turnCount<G.players.length?p.name+", you're up!":"Pass to "+p.name+"!");
@@ -848,7 +849,8 @@ function endGame(){if(!$("#game").classList.contains("active"))return;
   var ranked=G.players.slice().sort(function(a,b){return b.score-a.score||b.stars-a.stars;});
   var top=ranked[0].score; var winners=ranked.filter(function(p){return p.score===top;}); var tie=winners.length>1;
   show("win");
-  if(tie){$("#winTitle").textContent="Great typing, everyone! 🤝"; $("#winTitle").classList.add("title-grad"); $("#winTitle").style.color=""; $("#winSub").textContent="You all learned new words today!";}
+  if(G.players.length===1){var s=ranked[0]; $("#winTitle").textContent="Great job, "+s.name+"! 🎉"; $("#winTitle").classList.remove("title-grad"); $("#winTitle").style.color=s.color.hex; $("#winSub").textContent="You earned "+s.stars+" ⭐ and grew your words — see the Parents page!";}
+  else if(tie){$("#winTitle").textContent="Great typing, everyone! 🤝"; $("#winTitle").classList.add("title-grad"); $("#winTitle").style.color=""; $("#winSub").textContent="You all learned new words today!";}
   else{var w=winners[0]; $("#winTitle").textContent=w.name+" wins! 🎉"; $("#winTitle").classList.remove("title-grad"); $("#winTitle").style.color=w.color.hex; $("#winSub").textContent="Everyone grew their vocabulary — check the Parents page!";}
   var host=$("#ranks"); host.innerHTML="";
   ranked.forEach(function(p,i){var row=document.createElement("div"); row.className="rankrow"+(p.score===top?" first":"");

@@ -209,6 +209,23 @@ footer.credit{color:var(--ink-soft); font-size:13px; margin-top:16px;}
 .tabrow::-webkit-scrollbar{display:none;}
 .tabrow button{font-family:inherit; font-weight:800; border:3px solid var(--card-edge); background:#fff; color:var(--ink-soft); border-radius:999px; padding:9px 14px; cursor:pointer; white-space:nowrap; min-height:44px;}
 .tabrow button.on{background:var(--brand); color:#fff; border-color:var(--brand);}
+/* ---- Adventure mode: Bible quest worlds ---- */
+.advbtn{background:linear-gradient(90deg,#5b7cfa,#8a4fe0)!important; color:#fff!important;}
+.worldgrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(148px,1fr)); gap:12px; margin:12px 0;}
+.worldcard{border:3px solid var(--card-edge); border-radius:18px; padding:14px 10px; background:#fff; cursor:pointer; text-align:center; box-shadow:var(--shadow); color:var(--ink);}
+.worldcard:active{transform:translateY(3px);}
+.worldcard .we{font-size:40px; line-height:1;}
+.worldcard .wn{font-weight:900; font-size:16px; margin-top:4px;}
+.worldcard .ws{font-size:12px; color:var(--ink-soft); margin-top:3px; line-height:1.2;}
+.scene{max-width:640px; margin:8px auto 2px; border-radius:18px; overflow:hidden; box-shadow:var(--shadow);}
+.scenesky{padding:12px 12px 10px; color:#fff;}
+.scenechars{display:flex; justify-content:space-between; align-items:flex-end; font-size:clamp(32px,9vw,48px); line-height:1; margin-bottom:8px; filter:drop-shadow(0 3px 5px rgba(0,0,0,.28));}
+.hero.bump{animation:herohop .6s;}
+@keyframes herohop{0%,100%{transform:translateY(0) scale(1)}40%{transform:translateY(-12px) scale(1.18)}}
+.track{display:flex; flex-wrap:wrap; gap:3px; justify-content:center; background:rgba(255,255,255,.2); border-radius:999px; padding:6px 8px;}
+.slot{font-size:16px; min-width:15px; text-align:center; opacity:.5;}
+.slot.done{opacity:1;}
+.scenemsg{text-align:center; font-weight:800; font-size:13px; margin-top:8px; text-shadow:0 1px 2px rgba(0,0,0,.35);}
 </style>
 </head>
 <body>
@@ -228,7 +245,8 @@ footer.credit{color:var(--ink-soft); font-size:13px; margin-top:16px;}
     <h1 class="title-grad">Type Quest</h1>
     <p class="lead">Type real words, learn what they mean, grow every day! 🚀</p>
     <div class="card">
-      <button class="btn big wiggle" onclick="goSetup()">▶️ Play</button>
+      <button class="btn big wiggle" onclick="goLearn()">📖 Learn &amp; Type</button>
+      <div class="row" style="margin-top:12px"><button class="btn big advbtn" onclick="goAdventure()">🗺️ Adventure Quest</button></div>
       <div class="row" style="margin-top:14px">
         <button class="btn ghost sm" onclick="openHow()">❓ How to Play</button>
         <button class="btn ghost sm" onclick="openParents()">👪 Parents</button>
@@ -271,12 +289,22 @@ footer.credit{color:var(--ink-soft); font-size:13px; margin-top:16px;}
       <div class="hint-txt" id="startHint"></div></div>
   </section>
 
+  <section id="worldselect" class="screen">
+    <div class="row" style="justify-content:space-between">
+      <button class="iconbtn" onclick="show('setup')">🏠</button>
+      <h2 style="flex:1">Pick a Bible Quest! 🗺️</h2><span style="width:50px"></span>
+    </div>
+    <p class="hint-txt">Type words to live out a Bible story — and learn new words as you go. 🕊️</p>
+    <div class="worldgrid" id="worldgrid"></div>
+  </section>
+
   <section id="game" class="screen">
     <div class="topbar">
       <button class="iconbtn" onclick="quitToHome()">🏠</button>
       <div class="scorebar" id="scorebar"></div>
       <button class="iconbtn" onclick="openHow()">❓</button>
     </div>
+    <div class="scene" id="scene" style="display:none"></div>
     <div class="turnbanner" id="turnbanner">It's your turn!</div>
     <div class="prompt" id="prompt"></div>
     <div class="meaning" id="meaning"></div>
@@ -477,7 +505,9 @@ function speak(t,rate,pitch){if(!opt.tts||!t)return; try{var sy=window.speechSyn
 
 /* ---------- screens ---------- */
 function show(id){$$(".screen").forEach(function(s){s.classList.remove("active");}); var el=$("#"+id); if(el)el.classList.add("active"); var pa=$("#pass"); if(pa&&id!=="game")pa.classList.remove("show"); window.scrollTo(0,0);}
-function goSetup(){resumeAudio(); buildSetup(); show("setup");}
+function goSetup(){resumeAudio(); buildSetup(); $("#startBtn").textContent=advMode?"🗺️ Choose a Quest!":"🚀 Start!"; show("setup");}
+function goLearn(){advMode=false; goSetup();}
+function goAdventure(){advMode=true; goSetup();}
 function quitToHome(){if(window.confirm("Leave the game and go home? This round's scores will be lost (learning is still saved).")){try{window.speechSynthesis.cancel();}catch(e){} show("splash");}}
 function openHow(){$("#howOverlay").classList.add("show");}
 function closeHow(){$("#howOverlay").classList.remove("show");}
@@ -584,8 +614,10 @@ function startGame(){
   resumeAudio();
   var players=chosenChildren().map(function(ch){ return {ref:ch, name:ch.name, color:colorById(ch.colorId), tier:ch.tier, buddy:ch.buddy||"🤖", score:0, stars:0, streak:0, badges:{}}; });
   if(!players.length){ toast("Pick at least one player 🙂"); return; }
+  saveSetup();
+  if(advMode){ advPlayers=players; renderWorldSelect(); show("worldselect"); return; }
   G={players:players, rounds:S.rounds, turnCount:0, total:players.length*S.rounds, problem:null, firstTut:tutSeen()};
-  saveSetup(); show("game"); buildKeyboard(); startTurn();
+  show("game"); buildKeyboard(); startTurn();
 }
 function tutSeen(){try{return localStorage.getItem("tq_tut")==="1";}catch(e){return false;}}
 function markTut(){try{localStorage.setItem("tq_tut","1");}catch(e){}}
@@ -613,7 +645,7 @@ function beginTurn(){
   setTimeout(sayTarget,450);
 }
 function endTurn(){if(G.ending)return; G.ending=true; G.turnCount++; var who=G.turnCount; if(G.turnCount>=G.total) setTimeout(function(){if(G&&G.turnCount===who){G.ending=false; endGame();}},900); else setTimeout(function(){if(G&&G.turnCount===who){G.ending=false; startTurn();}},900);}
-function skipTurn(){if(G.ending)return; sSoft(); speak("That's okay! Next player."); toast("No worries — next turn! 😊"); endTurn();}
+function skipTurn(){if(G.ending)return; if(G.adventure){ advAdvance(false); return; } sSoft(); speak("That's okay! Next player."); toast("No worries — next turn! 😊"); endTurn();}
 
 function renderScoreboard(){
   var host=$("#scorebar"); host.innerHTML="";
@@ -718,6 +750,7 @@ function reactBuddy(state){ var bd=$("#buddy"); if(!bd)return; bd.classList.remo
 /* ---------- render typing ---------- */
 function renderProblem(){
   var pr=G.problem;
+  var scn=$("#scene"); if(scn)scn.style.display=(G&&G.adventure)?"":"none";
   $("#prompt").innerHTML = themeById(pr.theme).emoji+" "+escapeHTML(pr.label);
   $("#meaning").innerHTML = (pr.tier<=3 && pr.meaning) ? ("💡 <b>"+escapeHTML(cap(pr.vocab?pr.vocab.word:(pr.target)))+"</b> — "+escapeHTML(pr.meaning)) : "";
   $("#compArea").innerHTML=""; $("#kbd").style.display="";
@@ -772,6 +805,7 @@ function completeTyping(){
   pr._elapsed = pr.t0? (now()-pr.t0):0;
   var total=pr.idx+pr.errors; pr.acc = total>0? Math.round(pr.idx/total*100):100;
   var mins=(pr._elapsed||0)/60000; pr.wpm = mins>0.0001? Math.min(220,Math.round((pr.target.length/5)/mins)) : 0;
+  if(G.adventure){ advFinish(); return; }
   if(pr.comp){ askComp(); return; }
   finishTurn(false);
 }
@@ -858,7 +892,7 @@ function endGame(){if(!$("#game").classList.contains("active"))return;
   bigConfetti(); sWin();
   setTimeout(function(){speak((tie?"Great typing everyone! ":winners[0].name+" wins! ")+"You learned new words today!");},400);
 }
-function playAgain(){G.players.forEach(function(p){p.score=0;p.stars=0;p.streak=0;p.badges={};}); G.turnCount=0; $("#winTitle").classList.add("title-grad"); $("#winTitle").style.color=""; show("game"); startTurn();}
+function playAgain(){ if(G.adventure){ renderWorldSelect(); show("worldselect"); return; } G.players.forEach(function(p){p.score=0;p.stars=0;p.streak=0;p.badges={};}); G.turnCount=0; $("#winTitle").classList.add("title-grad"); $("#winTitle").style.color=""; show("game"); startTurn();}
 
 /* ---------- parents dashboard ---------- */
 var parentSel={childId:null, theme:null};
@@ -1033,6 +1067,87 @@ function spawnEnvironment(){
     b.style.width=sz+"px"; b.style.height=sz+"px"; b.style.left=(Math.random()*100)+"%";
     b.style.animationDuration=(10+Math.random()*12).toFixed(1)+"s"; b.style.animationDelay=(Math.random()*12).toFixed(1)+"s"; sky.appendChild(b); }
 }
+/* ================= ADVENTURE MODE (Bible quests) ================= */
+var advMode=false, advPlayers=[];
+var WORLDS=[
+ {id:"calm-storm",name:"Calm the Storm",emoji:"🌊",hero:"⛵",goal:"☀️",collect:"🫧",bg:"linear-gradient(160deg,#274b7a,#3b6ea5,#8ab6dd)",task:"Type words to calm the waves!",cheers:["The sea grows calmer!","The waves settle!","Peace over the water!"],winTitle:"Peace, be still! 🌊",winMsg:"Jesus spoke, and the storm became perfectly calm.",verse:"Peace, be still."},
+ {id:"walk-water",name:"Walk on Water",emoji:"💧",hero:"🚶",goal:"🙏",collect:"🪨",bg:"linear-gradient(160deg,#2a6f97,#468faf,#a9d6e5)",task:"Make stepping stones to reach Jesus!",cheers:["A stone appears!","Keep walking!","Almost to Jesus!"],winTitle:"You walked to Jesus! 💧",winMsg:"Peter stepped out of the boat and walked on the water to Jesus.",verse:"Take courage. Do not be afraid."},
+ {id:"loaves-fishes",name:"Loaves & Fishes",emoji:"🍞",hero:"🧺",goal:"👨‍👩‍👧‍👦",collect:"🐟",bg:"linear-gradient(160deg,#c8892b,#e3b05a,#f6e7b0)",task:"Share bread and fish with the crowd!",cheers:["A basket fills!","More for everyone!","Enough for all!"],winTitle:"Five thousand fed! 🍞🐟",winMsg:"Jesus blessed a boy's small lunch and fed a great crowd.",verse:"He gave thanks and shared."},
+ {id:"good-shepherd",name:"The Good Shepherd",emoji:"🐑",hero:"🧑‍🌾",goal:"🏠",collect:"🐑",bg:"linear-gradient(160deg,#3a7d44,#67a36b,#bfe3ad)",task:"Bring the lost sheep safely home!",cheers:["A sheep is found!","Back to the fold!","Safe and sound!"],winTitle:"Every sheep is safe! 🐑",winMsg:"The good shepherd searched until every lost sheep was home.",verse:"I am the good shepherd."},
+ {id:"david",name:"David & Goliath",emoji:"🪨",hero:"🧒",goal:"🏆",collect:"✨",bg:"linear-gradient(160deg,#b08030,#d4a94e,#efe0a8)",task:"Help young David be brave!",cheers:["Braver and braver!","Steady now!","So strong in faith!"],winTitle:"David was brave! 🪨",winMsg:"With God's help, little David was braver than the giant.",verse:"The battle belongs to the Lord."},
+ {id:"noah",name:"Noah's Ark",emoji:"🌈",hero:"🛶",goal:"🌈",collect:"🐾",bg:"linear-gradient(160deg,#6d5637,#a9814f,#9ccbe6)",task:"Bring the animals two by two!",cheers:["An animal climbs in!","Two by two!","Safe from the rain!"],winTitle:"Everyone is safe! 🌈",winMsg:"The animals went into the ark two by two, and a rainbow shone.",verse:"God set a rainbow in the sky."},
+ {id:"jonah",name:"Jonah & the Big Fish",emoji:"🐳",hero:"🐳",goal:"🏖️",collect:"🌊",bg:"linear-gradient(160deg,#1b4965,#2a6f97,#8ecae6)",task:"Swim Jonah safely to the shore!",cheers:["A big splash!","Closer to shore!","Almost there!"],winTitle:"Jonah reached the shore! 🐳",winMsg:"The great fish carried Jonah safely to dry land.",verse:"God gives second chances."},
+ {id:"daniel",name:"Daniel & the Lions",emoji:"🦁",hero:"🧎",goal:"🌅",collect:"😴",bg:"linear-gradient(160deg,#3a2f4a,#6a5a7a,#d8b86a)",task:"Type gentle words to keep the lions calm!",cheers:["A lion yawns!","So peaceful!","Sleepy, gentle lions!"],winTitle:"Morning came — Daniel is safe! 🦁",winMsg:"God kept the lions gentle all through the night.",verse:"My God sent his angel."},
+ {id:"sower",name:"The Sower's Garden",emoji:"🌱",hero:"🧑‍🌾",goal:"🌻",collect:"🌸",bg:"linear-gradient(160deg,#4a8c3f,#79b562,#cdeab0)",task:"Plant good seeds and watch them grow!",cheers:["A flower grows!","Good soil!","Blooming beautifully!"],winTitle:"A beautiful garden grew! 🌱",winMsg:"The seeds in good soil grew into a wonderful garden.",verse:"Some seed fell on good soil."},
+ {id:"bethlehem",name:"Journey to Bethlehem",emoji:"⭐",hero:"🧑‍🤝‍🧑",goal:"👶",collect:"⭐",bg:"linear-gradient(160deg,#1a1a40,#3a3a7a,#8a7fd8)",task:"Follow the star to the manger!",cheers:["The star shines!","Follow the star!","Nearly there!"],winTitle:"They found baby Jesus! ⭐",winMsg:"The star led the way to the manger in Bethlehem.",verse:"Unto us a child is born."},
+ {id:"creation-pond",name:"Creation Pond",emoji:"🐸",hero:"🐸",goal:"🌈",collect:"🐛",bg:"linear-gradient(160deg,#5f9e5a,#8fce7c,#bfe8f0)",task:"Type the bug words — the frog hops to catch them!",cheers:["Gulp! Yum!","Hop, hop!","The frog is happy!"],winTitle:"God made the frog — and it is good! 🐸",winMsg:"God made the frogs and the bugs and the pond, and saw it was good.",verse:"God saw that it was good."}
+];
+function worldById(id){for(var i=0;i<WORLDS.length;i++)if(WORLDS[i].id===id)return WORLDS[i];return WORLDS[0];}
+function renderWorldSelect(){
+  var host=$("#worldgrid"); host.innerHTML="";
+  WORLDS.forEach(function(w){ var c=document.createElement("div"); c.className="worldcard";
+    c.innerHTML="<div class='we'>"+w.emoji+"</div><div class='wn'>"+escapeHTML(w.name)+"</div><div class='ws'>"+escapeHTML(w.task)+"</div>";
+    c.onclick=function(){ sTap(); startAdventure(w.id); }; host.appendChild(c); });
+}
+function startAdventure(wid){
+  resumeAudio(); var w=worldById(wid); if(!advPlayers||!advPlayers.length){ show("setup"); return; }
+  var steps=Math.max(5,Math.min(S.rounds||8,14));
+  G={adventure:true, world:w, players:advPlayers, rounds:S.rounds, turnCount:0, total:steps, problem:null, ending:false, firstTut:true};
+  show("game"); buildKeyboard(); advBegin();
+}
+function advBegin(){
+  if(!$("#game").classList.contains("active"))return;
+  G.ending=false;
+  if(G.turnCount>=G.total){ advWin(); return; }
+  var p=curPlayer(); applyColor(p); renderScoreboard(); renderScene(false);
+  $("#turnbanner").innerHTML=G.world.emoji+" <b>"+escapeHTML(p.name)+"</b> <span class='roundtag'>· "+escapeHTML(G.world.name)+" · "+G.turnCount+"/"+G.total+"</span> <span class='buddy' id='buddy'>"+(p.buddy||"🤖")+"</span>";
+  G.problem=genAdvProblem(p); renderProblem();
+  setTimeout(sayTarget,450);
+}
+function genAdvProblem(p){
+  var ths=selectedThemes(); if(!ths.length)ths=["english"];
+  var th=pick(ths); if(th==="comp")th="english";
+  var t=Math.min(p.tier,3);
+  var e=pickEntry(th,t,p); var disp=sanitize(caseFor(e,t))||e.w;
+  return {typing:true,tier:t,theme:th,target:disp,label:"Type the word!",meaning:e.m||"",vocab:(e.m?{theme:th,word:e.w.toLowerCase(),meaning:e.m}:null),say:e.w+". "+(e.m||"")};
+}
+function advAdvance(credit){
+  if(G.ending)return; G.ending=true;
+  var pr=G.problem, p=curPlayer();
+  if(credit){
+    var stars=pr.errors===0?3:(pr.errors<=2?2:1);
+    p.score+=pr.tier*2+stars*3; p.stars+=stars; p.streak=(stars>=2?p.streak+1:0);
+    recordResult(p,pr,false);
+    sGood(); setTimeout(sStar,160); confetti(); reactBuddy("win");
+    toast(G.world.emoji+"  "+pick(G.world.cheers));
+    if(pr.vocab) speak(praise()+" "+pr.vocab.word+" means "+pr.vocab.meaning); else speak(praise());
+  } else { sSoft(); toast("Next word! 😊"); }
+  G.turnCount++;
+  renderScoreboard(); renderScene(true);
+  setTimeout(function(){ G.ending=false; if(G.turnCount>=G.total) advWin(); else advBegin(); }, credit?1050:650);
+}
+function advFinish(){ advAdvance(true); }
+function advWin(){
+  if(!$("#game").classList.contains("active"))return;
+  try{window.speechSynthesis.cancel();}catch(e){}
+  var w=G.world; show("win");
+  $("#winTitle").classList.remove("title-grad"); $("#winTitle").style.color=curPlayer().color.hex; $("#winTitle").textContent=w.winTitle;
+  $("#winSub").innerHTML=escapeHTML(w.winMsg)+"<br><b>“"+escapeHTML(w.verse)+"”</b>";
+  var host=$("#ranks"); host.innerHTML="<div class='rankrow first'><span style='font-size:26px'>"+w.emoji+"</span>&nbsp;<b>"+escapeHTML(w.name)+" — complete!</b></div>";
+  G.players.forEach(function(p){ host.innerHTML+="<div class='rankrow'><span class='cdot' style='background:"+p.color.hex+"'></span><b>"+escapeHTML(p.name)+"</b><span class='pts'>"+p.stars+" ⭐</span></div>"; });
+  bigConfetti(); sWin(); setTimeout(function(){speak(w.winTitle+". "+w.verse);},400);
+}
+function renderScene(animate){
+  var w=G.world, host=$("#scene"); if(!host||!w)return;
+  host.style.display="";
+  var prog=G.turnCount, total=G.total, slots="";
+  for(var i=0;i<total;i++){ slots+="<span class='slot"+(i<prog?" done":"")+"'>"+(i<prog?w.collect:"·")+"</span>"; }
+  host.innerHTML="<div class='scenesky' style='background:"+w.bg+"'>"
+    +"<div class='scenechars'><span class='hero"+(animate?" bump":"")+"'>"+w.hero+"</span><span class='goalic'>"+w.goal+"</span></div>"
+    +"<div class='track'>"+slots+"</div>"
+    +"<div class='scenemsg'>"+escapeHTML(prog>=total? w.winTitle : w.task)+"</div></div>";
+}
+
 function boot(){
   loadAll(); loadBanks(); syncToggles(); spawnEnvironment();
   try{window.speechSynthesis.getVoices(); pickVoice(); if(window.speechSynthesis)window.speechSynthesis.onvoiceschanged=pickVoice;}catch(e){}

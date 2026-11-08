@@ -1,0 +1,907 @@
+{
+  "theme": "english",
+  "name": "English",
+  "words": [
+    {
+      "w": "a",
+      "m": "one of something"
+    },
+    {
+      "w": "i",
+      "m": "the word you call yourself"
+    },
+    {
+      "w": "the",
+      "m": "a word we use before a naming word"
+    },
+    {
+      "w": "and",
+      "m": "a word that joins two things"
+    },
+    {
+      "w": "you",
+      "m": "the person I am talking to"
+    },
+    {
+      "w": "is",
+      "m": "tells us something happens now"
+    },
+    {
+      "w": "it",
+      "m": "a word for a thing"
+    },
+    {
+      "w": "in",
+      "m": "inside of something"
+    },
+    {
+      "w": "to",
+      "m": "toward a place or thing"
+    },
+    {
+      "w": "of",
+      "m": "belonging to something"
+    },
+    {
+      "w": "was",
+      "m": "tells us something happened before"
+    },
+    {
+      "w": "for",
+      "m": "given to someone or something"
+    },
+    {
+      "w": "are",
+      "m": "tells us more than one is"
+    },
+    {
+      "w": "they",
+      "m": "more than one person or thing"
+    },
+    {
+      "w": "said",
+      "m": "told something with words"
+    },
+    {
+      "w": "have",
+      "m": "to own or hold something"
+    },
+    {
+      "w": "with",
+      "m": "together or next to someone"
+    },
+    {
+      "w": "this",
+      "m": "the thing right here"
+    },
+    {
+      "w": "that",
+      "m": "the thing over there"
+    },
+    {
+      "w": "from",
+      "m": "starting at a place"
+    },
+    {
+      "w": "what",
+      "m": "a word we ask with"
+    },
+    {
+      "w": "when",
+      "m": "a word we ask about time"
+    },
+    {
+      "w": "were",
+      "m": "tells us things happened before"
+    },
+    {
+      "w": "your",
+      "m": "belonging to you"
+    },
+    {
+      "w": "there",
+      "m": "in that place"
+    },
+    {
+      "w": "their",
+      "m": "belonging to them"
+    },
+    {
+      "w": "would",
+      "m": "might do something"
+    },
+    {
+      "w": "could",
+      "m": "was able to do something"
+    },
+    {
+      "w": "should",
+      "m": "a good thing to do"
+    },
+    {
+      "w": "because",
+      "m": "it tells us why"
+    },
+    {
+      "w": "before",
+      "m": "at an earlier time"
+    },
+    {
+      "w": "after",
+      "m": "at a later time"
+    },
+    {
+      "w": "under",
+      "m": "at a place below"
+    },
+    {
+      "w": "over",
+      "m": "at a place above"
+    },
+    {
+      "w": "around",
+      "m": "on every side"
+    },
+    {
+      "w": "little",
+      "m": "small in size"
+    },
+    {
+      "w": "people",
+      "m": "more than one person"
+    },
+    {
+      "w": "friend",
+      "m": "someone you like and trust"
+    },
+    {
+      "w": "school",
+      "m": "a place where we learn"
+    },
+    {
+      "w": "water",
+      "m": "a clear drink we need"
+    },
+    {
+      "w": "color",
+      "m": "red blue or green and more"
+    },
+    {
+      "w": "every",
+      "m": "each one of them"
+    },
+    {
+      "w": "funny",
+      "m": "something that makes us laugh"
+    },
+    {
+      "w": "where",
+      "m": "a word we ask about place"
+    },
+    {
+      "w": "which",
+      "m": "asks you to pick one"
+    },
+    {
+      "w": "something",
+      "m": "a thing we do not name"
+    },
+    {
+      "w": "together",
+      "m": "with each other"
+    },
+    {
+      "w": "letter",
+      "m": "a mark that makes a sound"
+    },
+    {
+      "w": "word",
+      "m": "letters that mean something"
+    },
+    {
+      "w": "sentence",
+      "m": "words that tell a full idea"
+    },
+    {
+      "w": "story",
+      "m": "a tale we read or hear"
+    },
+    {
+      "w": "book",
+      "m": "pages we read together"
+    },
+    {
+      "w": "page",
+      "m": "one side of a sheet"
+    },
+    {
+      "w": "title",
+      "m": "the name of a book"
+    },
+    {
+      "w": "author",
+      "m": "the person who wrote it"
+    },
+    {
+      "w": "chapter",
+      "m": "one part of a book"
+    },
+    {
+      "w": "noun",
+      "m": "a word for a person or thing"
+    },
+    {
+      "w": "verb",
+      "m": "a word that shows action"
+    },
+    {
+      "w": "adjective",
+      "m": "a word that describes something"
+    },
+    {
+      "w": "adverb",
+      "m": "a word that tells how"
+    },
+    {
+      "w": "vowel",
+      "m": "the letters a e i o u"
+    },
+    {
+      "w": "consonant",
+      "m": "a letter that is not a vowel"
+    },
+    {
+      "w": "syllable",
+      "m": "a word part we say"
+    },
+    {
+      "w": "rhyme",
+      "m": "words that sound alike"
+    },
+    {
+      "w": "spell",
+      "m": "to say the letters in order"
+    },
+    {
+      "w": "read",
+      "m": "to look at words and understand them"
+    },
+    {
+      "w": "write",
+      "m": "to make letters with a pen"
+    },
+    {
+      "w": "sound",
+      "m": "something we hear"
+    },
+    {
+      "w": "capital",
+      "m": "a big letter at the start"
+    },
+    {
+      "w": "period",
+      "m": "a dot that ends a sentence"
+    },
+    {
+      "w": "comma",
+      "m": "a small mark for a pause"
+    },
+    {
+      "w": "question",
+      "m": "something we ask"
+    },
+    {
+      "w": "big",
+      "m": "large in size"
+    },
+    {
+      "w": "small",
+      "m": "little in size"
+    },
+    {
+      "w": "fast",
+      "m": "moving very quickly"
+    },
+    {
+      "w": "slow",
+      "m": "not moving fast"
+    },
+    {
+      "w": "hot",
+      "m": "very warm to touch"
+    },
+    {
+      "w": "cold",
+      "m": "not warm at all"
+    },
+    {
+      "w": "happy",
+      "m": "feeling very glad"
+    },
+    {
+      "w": "sad",
+      "m": "feeling not happy"
+    },
+    {
+      "w": "soft",
+      "m": "nice and gentle to touch"
+    },
+    {
+      "w": "hard",
+      "m": "firm and not soft"
+    },
+    {
+      "w": "loud",
+      "m": "making a big sound"
+    },
+    {
+      "w": "quiet",
+      "m": "making little or no sound"
+    },
+    {
+      "w": "brave",
+      "m": "not afraid to do hard things"
+    },
+    {
+      "w": "kind",
+      "m": "nice and caring to others"
+    },
+    {
+      "w": "gentle",
+      "m": "soft and careful"
+    },
+    {
+      "w": "honest",
+      "m": "always telling the truth"
+    },
+    {
+      "w": "curious",
+      "m": "wanting to learn more"
+    },
+    {
+      "w": "clever",
+      "m": "good at thinking"
+    },
+    {
+      "w": "careful",
+      "m": "taking your time to be safe"
+    },
+    {
+      "w": "bright",
+      "m": "full of light"
+    },
+    {
+      "w": "early",
+      "m": "before the right time"
+    },
+    {
+      "w": "late",
+      "m": "after the right time"
+    },
+    {
+      "w": "empty",
+      "m": "having nothing inside"
+    },
+    {
+      "w": "full",
+      "m": "having no more room"
+    },
+    {
+      "w": "clean",
+      "m": "free from dirt"
+    },
+    {
+      "w": "dirty",
+      "m": "covered in dirt"
+    },
+    {
+      "w": "young",
+      "m": "not old yet"
+    },
+    {
+      "w": "high",
+      "m": "far up above"
+    },
+    {
+      "w": "deep",
+      "m": "far down below"
+    },
+    {
+      "w": "heavy",
+      "m": "very hard to lift"
+    },
+    {
+      "w": "light",
+      "m": "easy to lift"
+    },
+    {
+      "w": "run",
+      "m": "to move fast on your feet"
+    },
+    {
+      "w": "jump",
+      "m": "to push up off the ground"
+    },
+    {
+      "w": "walk",
+      "m": "to move on your feet"
+    },
+    {
+      "w": "talk",
+      "m": "to speak with words"
+    },
+    {
+      "w": "look",
+      "m": "to turn your eyes to see"
+    },
+    {
+      "w": "listen",
+      "m": "to use your ears well"
+    },
+    {
+      "w": "think",
+      "m": "to use your mind"
+    },
+    {
+      "w": "learn",
+      "m": "to find out something new"
+    },
+    {
+      "w": "help",
+      "m": "to do good for someone"
+    },
+    {
+      "w": "share",
+      "m": "to give a part to others"
+    },
+    {
+      "w": "play",
+      "m": "to have fun"
+    },
+    {
+      "w": "smile",
+      "m": "to turn your mouth up happily"
+    },
+    {
+      "w": "wonder",
+      "m": "to think about why"
+    },
+    {
+      "w": "explore",
+      "m": "to go and find new things"
+    },
+    {
+      "w": "build",
+      "m": "to make something from parts"
+    },
+    {
+      "w": "create",
+      "m": "to make something new"
+    },
+    {
+      "w": "cat",
+      "m": "a soft pet that says meow"
+    },
+    {
+      "w": "dog",
+      "m": "a pet that likes to play"
+    },
+    {
+      "w": "sun",
+      "m": "the bright light in the sky"
+    },
+    {
+      "w": "moon",
+      "m": "the light we see at night"
+    },
+    {
+      "w": "star",
+      "m": "a tiny light in the night sky"
+    },
+    {
+      "w": "tree",
+      "m": "a tall plant with leaves"
+    },
+    {
+      "w": "flower",
+      "m": "a pretty part of a plant"
+    },
+    {
+      "w": "bird",
+      "m": "an animal that can fly"
+    },
+    {
+      "w": "fish",
+      "m": "an animal that lives in water"
+    },
+    {
+      "w": "home",
+      "m": "the place where you live"
+    },
+    {
+      "w": "house",
+      "m": "a building where people live"
+    },
+    {
+      "w": "family",
+      "m": "the people who love you"
+    },
+    {
+      "w": "mother",
+      "m": "the woman who cares for you"
+    },
+    {
+      "w": "father",
+      "m": "the man who cares for you"
+    },
+    {
+      "w": "sister",
+      "m": "a girl in your family"
+    },
+    {
+      "w": "brother",
+      "m": "a boy in your family"
+    },
+    {
+      "w": "baby",
+      "m": "a very young child"
+    },
+    {
+      "w": "child",
+      "m": "a young boy or girl"
+    },
+    {
+      "w": "teacher",
+      "m": "a person who helps us learn"
+    },
+    {
+      "w": "class",
+      "m": "a group of children who learn"
+    },
+    {
+      "w": "pen",
+      "m": "a tool we write with"
+    },
+    {
+      "w": "pencil",
+      "m": "a tool we write and draw with"
+    },
+    {
+      "w": "paper",
+      "m": "a thin sheet we write on"
+    },
+    {
+      "w": "desk",
+      "m": "a table where we work"
+    },
+    {
+      "w": "chair",
+      "m": "a seat to sit on"
+    },
+    {
+      "w": "door",
+      "m": "a way to go in and out"
+    },
+    {
+      "w": "window",
+      "m": "a glass we see through"
+    },
+    {
+      "w": "food",
+      "m": "what we eat to grow"
+    },
+    {
+      "w": "milk",
+      "m": "a white drink from cows"
+    },
+    {
+      "w": "bread",
+      "m": "a soft food we eat"
+    },
+    {
+      "w": "apple",
+      "m": "a round fruit we eat"
+    },
+    {
+      "w": "cake",
+      "m": "a sweet food for parties"
+    },
+    {
+      "w": "love",
+      "m": "a warm caring feeling"
+    },
+    {
+      "w": "care",
+      "m": "to keep someone safe and well"
+    },
+    {
+      "w": "hope",
+      "m": "to wish for something good"
+    },
+    {
+      "w": "dream",
+      "m": "pictures in your mind at night"
+    },
+    {
+      "w": "truth",
+      "m": "what is real and right"
+    },
+    {
+      "w": "time",
+      "m": "hours days and years"
+    },
+    {
+      "w": "day",
+      "m": "the time when it is light"
+    },
+    {
+      "w": "night",
+      "m": "the time when it is dark"
+    },
+    {
+      "w": "morning",
+      "m": "the early part of the day"
+    },
+    {
+      "w": "week",
+      "m": "seven days in a row"
+    },
+    {
+      "w": "year",
+      "m": "twelve months long"
+    },
+    {
+      "w": "name",
+      "m": "what we call a person"
+    },
+    {
+      "w": "number",
+      "m": "a word that counts things"
+    },
+    {
+      "w": "game",
+      "m": "something fun we play"
+    },
+    {
+      "w": "music",
+      "m": "nice sounds we enjoy"
+    },
+    {
+      "w": "song",
+      "m": "music with words"
+    },
+    {
+      "w": "dance",
+      "m": "to move to music"
+    },
+    {
+      "w": "sing",
+      "m": "to make music with your voice"
+    },
+    {
+      "w": "draw",
+      "m": "to make a picture"
+    },
+    {
+      "w": "paint",
+      "m": "to make art with colors"
+    },
+    {
+      "w": "count",
+      "m": "to say numbers in order"
+    },
+    {
+      "w": "open",
+      "m": "to make something not shut"
+    },
+    {
+      "w": "close",
+      "m": "to shut something"
+    },
+    {
+      "w": "give",
+      "m": "to hand something to someone"
+    },
+    {
+      "w": "take",
+      "m": "to pick something up"
+    },
+    {
+      "w": "make",
+      "m": "to build or create something"
+    },
+    {
+      "w": "find",
+      "m": "to see what was lost"
+    },
+    {
+      "w": "know",
+      "m": "to have facts in your mind"
+    },
+    {
+      "w": "grow",
+      "m": "to get bigger"
+    },
+    {
+      "w": "eat",
+      "m": "to put food in your mouth"
+    },
+    {
+      "w": "drink",
+      "m": "to swallow water or milk"
+    },
+    {
+      "w": "sleep",
+      "m": "to rest with eyes closed"
+    },
+    {
+      "w": "wake",
+      "m": "to stop sleeping"
+    },
+    {
+      "w": "sit",
+      "m": "to rest on your seat"
+    },
+    {
+      "w": "stand",
+      "m": "to be up on your feet"
+    },
+    {
+      "w": "new",
+      "m": "just made or not old"
+    },
+    {
+      "w": "old",
+      "m": "not new or young"
+    },
+    {
+      "w": "good",
+      "m": "nice and right"
+    },
+    {
+      "w": "bad",
+      "m": "not good at all"
+    },
+    {
+      "w": "warm",
+      "m": "a little bit hot"
+    },
+    {
+      "w": "cool",
+      "m": "a little bit cold"
+    },
+    {
+      "w": "near",
+      "m": "close to something"
+    },
+    {
+      "w": "far",
+      "m": "a long way off"
+    },
+    {
+      "w": "first",
+      "m": "coming before all others"
+    },
+    {
+      "w": "last",
+      "m": "coming after all others"
+    },
+    {
+      "w": "next",
+      "m": "the one that comes after"
+    },
+    {
+      "w": "left",
+      "m": "the side where your heart is"
+    },
+    {
+      "w": "right",
+      "m": "the opposite of left"
+    },
+    {
+      "w": "up",
+      "m": "toward the sky"
+    },
+    {
+      "w": "down",
+      "m": "toward the ground"
+    },
+    {
+      "w": "yes",
+      "m": "a word that means okay"
+    },
+    {
+      "w": "no",
+      "m": "a word that means not so"
+    },
+    {
+      "w": "please",
+      "m": "a kind word when we ask"
+    },
+    {
+      "w": "thank",
+      "m": "to say you are glad"
+    },
+    {
+      "w": "sorry",
+      "m": "a word when we did wrong"
+    },
+    {
+      "w": "true",
+      "m": "real and not made up"
+    },
+    {
+      "w": "false",
+      "m": "not real or not true"
+    },
+    {
+      "w": "same",
+      "m": "alike in every way"
+    },
+    {
+      "w": "different",
+      "m": "not the same"
+    },
+    {
+      "w": "many",
+      "m": "a large number"
+    },
+    {
+      "w": "few",
+      "m": "only a small number"
+    },
+    {
+      "w": "more",
+      "m": "a larger amount"
+    },
+    {
+      "w": "less",
+      "m": "a smaller amount"
+    },
+    {
+      "w": "start",
+      "m": "to begin something"
+    },
+    {
+      "w": "stop",
+      "m": "to not go on"
+    },
+    {
+      "w": "begin",
+      "m": "to do the first part"
+    },
+    {
+      "w": "end",
+      "m": "the last part of something"
+    }
+  ],
+  "sentences": [
+    "I like to read good books.",
+    "A sentence starts with a capital letter.",
+    "Reading helps us learn new things every day.",
+    "Can you spell your own name?",
+    "We write stories about our happy days.",
+    "Every word is made of letters.",
+    "My teacher reads us a fun story.",
+    "A period tells us the sentence is done.",
+    "Do you know what a noun is?",
+    "Books can take us to many places.",
+    "Please share your crayons with a friend.",
+    "We listen when the teacher talks.",
+    "A kind word can make someone smile.",
+    "What is your favorite book to read?",
+    "Letters join together to make words.",
+    "We use a comma for a short pause.",
+    "Writing neatly helps everyone read our words.",
+    "The brave girl helped her little brother.",
+    "Can you find the vowel in the word?",
+    "We learn to spell new words at school.",
+    "A good story has a beginning and an end.",
+    "Please remember to start with a capital letter.",
+    "Reading every night makes us smarter and kinder.",
+    "How many words can you read today?",
+    "We draw pictures to go with our stories.",
+    "Sharing books with friends is a lot of fun.",
+    "Always be honest and kind to others."
+  ]
+}

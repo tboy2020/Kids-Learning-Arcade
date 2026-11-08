@@ -1,0 +1,724 @@
+{
+  "theme": "family",
+  "name": "Family",
+  "words": [
+    {
+      "w": "mom",
+      "m": "the mother in a family"
+    },
+    {
+      "w": "dad",
+      "m": "the father in a family"
+    },
+    {
+      "w": "mum",
+      "m": "another name for a mother"
+    },
+    {
+      "w": "son",
+      "m": "a boy child of parents"
+    },
+    {
+      "w": "kid",
+      "m": "a young child"
+    },
+    {
+      "w": "bed",
+      "m": "we sleep on it at night"
+    },
+    {
+      "w": "cup",
+      "m": "we drink water from it"
+    },
+    {
+      "w": "hug",
+      "m": "to hold someone with love"
+    },
+    {
+      "w": "toy",
+      "m": "a thing children play with"
+    },
+    {
+      "w": "pet",
+      "m": "an animal we love at home"
+    },
+    {
+      "w": "joy",
+      "m": "a big happy feeling"
+    },
+    {
+      "w": "kind",
+      "m": "gentle and nice to others"
+    },
+    {
+      "w": "love",
+      "m": "a warm caring feeling"
+    },
+    {
+      "w": "care",
+      "m": "to look after someone kindly"
+    },
+    {
+      "w": "help",
+      "m": "to do something for someone"
+    },
+    {
+      "w": "safe",
+      "m": "away from harm or danger"
+    },
+    {
+      "w": "warm",
+      "m": "a soft gentle heat"
+    },
+    {
+      "w": "home",
+      "m": "the place where a family lives"
+    },
+    {
+      "w": "room",
+      "m": "a space inside a house"
+    },
+    {
+      "w": "door",
+      "m": "we open it to go inside"
+    },
+    {
+      "w": "wall",
+      "m": "the flat side of a room"
+    },
+    {
+      "w": "roof",
+      "m": "the top cover of a house"
+    },
+    {
+      "w": "lamp",
+      "m": "a light we use at home"
+    },
+    {
+      "w": "sofa",
+      "m": "a soft seat for many people"
+    },
+    {
+      "w": "desk",
+      "m": "a table for writing and study"
+    },
+    {
+      "w": "baby",
+      "m": "a very young child"
+    },
+    {
+      "w": "twin",
+      "m": "one of two children born together"
+    },
+    {
+      "w": "aunt",
+      "m": "the sister of a parent"
+    },
+    {
+      "w": "papa",
+      "m": "a loving name for father"
+    },
+    {
+      "w": "mama",
+      "m": "a loving name for mother"
+    },
+    {
+      "w": "gran",
+      "m": "a short name for grandmother"
+    },
+    {
+      "w": "kiss",
+      "m": "a loving touch with the lips"
+    },
+    {
+      "w": "play",
+      "m": "to have fun together"
+    },
+    {
+      "w": "rest",
+      "m": "to stop and relax"
+    },
+    {
+      "w": "cook",
+      "m": "to make food ready to eat"
+    },
+    {
+      "w": "bake",
+      "m": "to cook bread or cake"
+    },
+    {
+      "w": "wash",
+      "m": "to clean with water"
+    },
+    {
+      "w": "tidy",
+      "m": "to put things in order"
+    },
+    {
+      "w": "clean",
+      "m": "to make something neat"
+    },
+    {
+      "w": "book",
+      "m": "pages with words to read"
+    },
+    {
+      "w": "game",
+      "m": "something fun we play together"
+    },
+    {
+      "w": "song",
+      "m": "music we sing with words"
+    },
+    {
+      "w": "cake",
+      "m": "a sweet treat for parties"
+    },
+    {
+      "w": "gift",
+      "m": "a present we give someone"
+    },
+    {
+      "w": "feed",
+      "m": "to give food to someone"
+    },
+    {
+      "w": "fold",
+      "m": "to make clothes neat and flat"
+    },
+    {
+      "w": "mop",
+      "m": "to clean a wet floor"
+    },
+    {
+      "w": "dust",
+      "m": "to wipe away dirt"
+    },
+    {
+      "w": "sing",
+      "m": "to make music with our voice"
+    },
+    {
+      "w": "chat",
+      "m": "to talk in a friendly way"
+    },
+    {
+      "w": "draw",
+      "m": "to make a picture with lines"
+    },
+    {
+      "w": "hope",
+      "m": "to wish for something good"
+    },
+    {
+      "w": "glad",
+      "m": "feeling happy about something"
+    },
+    {
+      "w": "calm",
+      "m": "quiet and not upset"
+    },
+    {
+      "w": "cozy",
+      "m": "warm and comfortable"
+    },
+    {
+      "w": "brave",
+      "m": "being strong when afraid"
+    },
+    {
+      "w": "happy",
+      "m": "feeling glad and joyful"
+    },
+    {
+      "w": "smile",
+      "m": "a happy look on the face"
+    },
+    {
+      "w": "share",
+      "m": "to give part to others"
+    },
+    {
+      "w": "cheer",
+      "m": "to make someone feel glad"
+    },
+    {
+      "w": "proud",
+      "m": "glad about something good"
+    },
+    {
+      "w": "trust",
+      "m": "to believe someone is good"
+    },
+    {
+      "w": "peace",
+      "m": "a calm and quiet feeling"
+    },
+    {
+      "w": "thank",
+      "m": "to show you are grateful"
+    },
+    {
+      "w": "bless",
+      "m": "to wish good things for someone"
+    },
+    {
+      "w": "learn",
+      "m": "to find out new things"
+    },
+    {
+      "w": "teach",
+      "m": "to help someone find out things"
+    },
+    {
+      "w": "sweep",
+      "m": "to clean the floor with a broom"
+    },
+    {
+      "w": "plant",
+      "m": "to put seeds in the ground"
+    },
+    {
+      "w": "paint",
+      "m": "colored liquid for making pictures"
+    },
+    {
+      "w": "color",
+      "m": "to fill a picture with crayons"
+    },
+    {
+      "w": "dance",
+      "m": "to move to music for fun"
+    },
+    {
+      "w": "laugh",
+      "m": "to make a happy sound"
+    },
+    {
+      "w": "story",
+      "m": "a tale we read or tell"
+    },
+    {
+      "w": "house",
+      "m": "a building where people live"
+    },
+    {
+      "w": "floor",
+      "m": "the bottom of a room"
+    },
+    {
+      "w": "chair",
+      "m": "a seat for one person"
+    },
+    {
+      "w": "table",
+      "m": "we eat and work on it"
+    },
+    {
+      "w": "clock",
+      "m": "it tells us the time"
+    },
+    {
+      "w": "shelf",
+      "m": "a flat board to hold things"
+    },
+    {
+      "w": "plate",
+      "m": "we put our food on it"
+    },
+    {
+      "w": "spoon",
+      "m": "we use it to eat soup"
+    },
+    {
+      "w": "fork",
+      "m": "we use it to pick up food"
+    },
+    {
+      "w": "bowl",
+      "m": "we eat cereal from it"
+    },
+    {
+      "w": "stove",
+      "m": "we cook food on it"
+    },
+    {
+      "w": "broom",
+      "m": "we sweep the floor with it"
+    },
+    {
+      "w": "towel",
+      "m": "we dry ourselves with it"
+    },
+    {
+      "w": "soap",
+      "m": "we wash our hands with it"
+    },
+    {
+      "w": "apron",
+      "m": "we wear it while we cook"
+    },
+    {
+      "w": "napkin",
+      "m": "cloth to wipe our mouth"
+    },
+    {
+      "w": "sister",
+      "m": "a girl with the same parents"
+    },
+    {
+      "w": "mother",
+      "m": "another word for mom"
+    },
+    {
+      "w": "father",
+      "m": "another word for dad"
+    },
+    {
+      "w": "parent",
+      "m": "a mother or a father"
+    },
+    {
+      "w": "child",
+      "m": "a young boy or girl"
+    },
+    {
+      "w": "cousin",
+      "m": "the child of your aunt or uncle"
+    },
+    {
+      "w": "uncle",
+      "m": "the brother of a parent"
+    },
+    {
+      "w": "niece",
+      "m": "the daughter of your brother or sister"
+    },
+    {
+      "w": "nephew",
+      "m": "the son of your brother or sister"
+    },
+    {
+      "w": "granny",
+      "m": "a loving name for grandmother"
+    },
+    {
+      "w": "family",
+      "m": "people who love and live together"
+    },
+    {
+      "w": "gentle",
+      "m": "soft and careful with others"
+    },
+    {
+      "w": "caring",
+      "m": "showing that you love someone"
+    },
+    {
+      "w": "loving",
+      "m": "full of warm kind feelings"
+    },
+    {
+      "w": "polite",
+      "m": "using kind and nice words"
+    },
+    {
+      "w": "honest",
+      "m": "always telling the truth"
+    },
+    {
+      "w": "praise",
+      "m": "to say kind words about someone"
+    },
+    {
+      "w": "memory",
+      "m": "something nice we remember"
+    },
+    {
+      "w": "hobby",
+      "m": "something fun we like to do"
+    },
+    {
+      "w": "puzzle",
+      "m": "a game with pieces to join"
+    },
+    {
+      "w": "crayon",
+      "m": "we color pictures with it"
+    },
+    {
+      "w": "flower",
+      "m": "a pretty part of a plant"
+    },
+    {
+      "w": "garden",
+      "m": "a place where plants grow"
+    },
+    {
+      "w": "window",
+      "m": "glass we look through outside"
+    },
+    {
+      "w": "pillow",
+      "m": "we rest our head on it"
+    },
+    {
+      "w": "basket",
+      "m": "we carry things inside it"
+    },
+    {
+      "w": "kettle",
+      "m": "we boil water in it"
+    },
+    {
+      "w": "fridge",
+      "m": "it keeps our food cold"
+    },
+    {
+      "w": "bucket",
+      "m": "we hold water in it"
+    },
+    {
+      "w": "mirror",
+      "m": "we see ourselves in it"
+    },
+    {
+      "w": "carpet",
+      "m": "soft cloth on the floor"
+    },
+    {
+      "w": "closet",
+      "m": "a small space for clothes"
+    },
+    {
+      "w": "drawer",
+      "m": "a box that slides in furniture"
+    },
+    {
+      "w": "cradle",
+      "m": "a small bed for a baby"
+    },
+    {
+      "w": "supper",
+      "m": "a light evening meal"
+    },
+    {
+      "w": "recipe",
+      "m": "steps to make a food dish"
+    },
+    {
+      "w": "picnic",
+      "m": "a meal we eat outdoors"
+    },
+    {
+      "w": "visit",
+      "m": "to go and see someone"
+    },
+    {
+      "w": "party",
+      "m": "a fun time with friends"
+    },
+    {
+      "w": "guest",
+      "m": "a person who visits our home"
+    },
+    {
+      "w": "friend",
+      "m": "someone you like and trust"
+    },
+    {
+      "w": "buddy",
+      "m": "a close and fun friend"
+    },
+    {
+      "w": "yard",
+      "m": "open space around a house"
+    },
+    {
+      "w": "fence",
+      "m": "it goes around a yard"
+    },
+    {
+      "w": "gate",
+      "m": "a door in a fence"
+    },
+    {
+      "w": "porch",
+      "m": "a covered step by the door"
+    },
+    {
+      "w": "stairs",
+      "m": "steps to go up and down"
+    },
+    {
+      "w": "attic",
+      "m": "a room just under the roof"
+    },
+    {
+      "w": "garage",
+      "m": "a place to keep a car"
+    },
+    {
+      "w": "kitchen",
+      "m": "the room where we cook food"
+    },
+    {
+      "w": "bedroom",
+      "m": "the room where we sleep"
+    },
+    {
+      "w": "bathroom",
+      "m": "the room where we wash"
+    },
+    {
+      "w": "blanket",
+      "m": "we cover up to stay warm"
+    },
+    {
+      "w": "candle",
+      "m": "a small light we blow out"
+    },
+    {
+      "w": "balloon",
+      "m": "a bag of air for fun"
+    },
+    {
+      "w": "present",
+      "m": "a gift wrapped for someone"
+    },
+    {
+      "w": "holiday",
+      "m": "a special day of rest"
+    },
+    {
+      "w": "birthday",
+      "m": "the day you were born"
+    },
+    {
+      "w": "welcome",
+      "m": "a kind greeting for guests"
+    },
+    {
+      "w": "neighbor",
+      "m": "a person who lives near you"
+    },
+    {
+      "w": "patient",
+      "m": "able to wait calmly"
+    },
+    {
+      "w": "thankful",
+      "m": "glad for what you have"
+    },
+    {
+      "w": "grateful",
+      "m": "feeling thankful for good things"
+    },
+    {
+      "w": "respect",
+      "m": "to treat others kindly"
+    },
+    {
+      "w": "forgive",
+      "m": "to stop being upset with someone"
+    },
+    {
+      "w": "comfort",
+      "m": "to help someone feel better"
+    },
+    {
+      "w": "cuddle",
+      "m": "to hold someone close with love"
+    },
+    {
+      "w": "cherish",
+      "m": "to love and keep something dear"
+    },
+    {
+      "w": "grandma",
+      "m": "the mother of your parent"
+    },
+    {
+      "w": "grandpa",
+      "m": "the father of your parent"
+    },
+    {
+      "w": "daughter",
+      "m": "a girl child of parents"
+    },
+    {
+      "w": "relative",
+      "m": "a person in your family"
+    },
+    {
+      "w": "sibling",
+      "m": "a brother or a sister"
+    },
+    {
+      "w": "toddler",
+      "m": "a young child learning to walk"
+    },
+    {
+      "w": "together",
+      "m": "being with one another"
+    },
+    {
+      "w": "household",
+      "m": "everyone living in one home"
+    },
+    {
+      "w": "dinner",
+      "m": "the meal we eat in the evening"
+    },
+    {
+      "w": "breakfast",
+      "m": "the first meal of the day"
+    },
+    {
+      "w": "lunch",
+      "m": "the meal we eat at midday"
+    },
+    {
+      "w": "snack",
+      "m": "a small bit of food"
+    },
+    {
+      "w": "bedtime",
+      "m": "the time to go to sleep"
+    },
+    {
+      "w": "chores",
+      "m": "small jobs we do at home"
+    }
+  ],
+  "sentences": [
+    "I love my family very much.",
+    "We help each other at home.",
+    "My mom reads me a story at bedtime.",
+    "Dad and I cook dinner together.",
+    "We hug when we feel sad.",
+    "My sister shares her toys with me.",
+    "Grandma bakes a sweet cake for us.",
+    "We keep our bedroom clean and tidy.",
+    "The whole family plays games after dinner.",
+    "My brother helps me with my homework.",
+    "We say thank you when someone is kind.",
+    "Grandpa tells us funny stories.",
+    "I set the table for lunch.",
+    "We water the plants in the garden.",
+    "My baby cousin likes to laugh and smile.",
+    "We wash the dishes as a team.",
+    "On my birthday we have a happy party.",
+    "Our pet dog sleeps near my bed.",
+    "We visit our grandma every weekend.",
+    "Mom gives me a warm hug before school.",
+    "We are kind and gentle with each other.",
+    "Family makes our home feel safe and cozy.",
+    "Can you help me fold the clothes?",
+    "Who wants to bake cookies with me?",
+    "What a happy day we had together!",
+    "We sweep the floor and make it shine.",
+    "I feel proud of my loving family.",
+    "Let us all share a big meal."
+  ]
+}

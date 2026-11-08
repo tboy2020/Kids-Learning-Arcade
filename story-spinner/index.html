@@ -495,7 +495,7 @@ function choose(o,btn){
     G.solved=true; btn.classList.add("good"); sGood(); setTimeout(sStar,150);
     if(pr.kind==="silly"||pr.kind==="fit"){ var bl=$("#blank"); if(bl){ bl.textContent=o.word; bl.className="fillw"; } speak(pr.prefix+" "+o.word+" "+(pr.suffix.replace(/[^a-zA-Z ,!.'?]/g,""))); }
     else { speak("Yes! "+o.word+" is right!"); }
-    confetti(); setTimeout(winTurn,500);
+    confetti(); var tok=navTok; setTimeout(function(){if(navTok!==tok)return; winTurn();},500);
   } else {
     btn.classList.add("bad"); setTimeout(function(){btn.classList.remove("bad");},520); sSoft();
     pr._wrong=(pr._wrong||0)+1; toast(pick(["Good try! Think again 🤔","Not quite — try again! 😊","Almost! You can do it 🌈"])); speak("Try again!");

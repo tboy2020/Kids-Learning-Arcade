@@ -341,7 +341,7 @@ function speak(t,rate){if(!opt.tts||!t)return; try{var sy=window.speechSynthesis
 
 function show(id){$$(".screen").forEach(function(s){s.classList.remove("active");}); var el=$("#"+id); if(el)el.classList.add("active"); window.scrollTo(0,0);}
 function goSetup(){resumeAudio(); buildSetup(); show("setup");}
-function quitToHome(){if(window.confirm("Leave the game and go home? Scores will be lost.")){try{window.speechSynthesis.cancel();}catch(e){} show("splash");}}
+function quitToHome(){if(window.confirm("Leave the game and go home? Scores will be lost.")){if(demoTimer){clearInterval(demoTimer);demoTimer=null;} try{window.speechSynthesis.cancel();}catch(e){} show("splash");}}
 function openHow(){$("#howOverlay").classList.add("show");}
 function closeHow(){$("#howOverlay").classList.remove("show");}
 function openSettings(){syncToggles(); $("#setOverlay").classList.add("show");}
@@ -430,7 +430,7 @@ function beginTurn(){
   setTimeout(sayProblem,500);
 }
 function endTurn(){if(G.ending)return; G.ending=true; G.turnCount++; if(G.turnCount>=G.total) setTimeout(function(){G.ending=false; endGame();},900); else setTimeout(function(){G.ending=false; startTurn();},900);}
-function skipTurn(){if(G.ending)return; sSoft(); speak("That's okay! Next player."); toast("No worries — next turn! 😊"); endTurn();}
+function skipTurn(){if(G.ending)return; if(demoTimer){clearInterval(demoTimer);demoTimer=null;} sSoft(); speak("That's okay! Next player."); toast("No worries — next turn! 😊"); endTurn();}
 
 function renderScoreboard(){
   var host=$("#scorebar"); host.innerHTML="";
@@ -511,6 +511,7 @@ function redraw(){
 function clearTrace(){ var pr=G.problem; if(!pr||pr.done)return; if(demoTimer){clearInterval(demoTimer);demoTimer=null;} pr.ink=[]; pr.wpts.forEach(function(w){w.lit=false;}); pr.drawing=false; sTap(); redraw(); }
 function completeTrace(){
   var pr=G.problem; if(pr.done)return; pr.done=true; pr.drawing=false;
+  if(demoTimer){clearInterval(demoTimer);demoTimer=null;}
   // flourish: draw the glyph thick in player color
   var pc=curPlayer().color.hex;
   ctx.strokeStyle=pc; ctx.lineWidth=SZ*0.085; ctx.globalAlpha=1;

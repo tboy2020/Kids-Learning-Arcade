@@ -487,7 +487,7 @@ function renderProblem(){
   var stage=$("#stage"), area=$("#area"); stage.innerHTML=""; area.innerHTML="";
   $("#listenBtn").style.display=""; var tok=seqToken;
   if(pr.kind==="repeat"){ stage.appendChild(renderPads()); setTimeout(function(){if(seqToken!==tok)return; watchSequence();},500); }
-  else if(pr.kind==="song"){ stage.appendChild(renderPads()); setTimeout(function(){ if(seqToken!==tok)return; glowNext(); setTimeout(function(){if(seqToken!==tok)return; playAll(pr.notes, glowNext);},300); }, 350); }
+  else if(pr.kind==="song"){ stage.appendChild(renderPads()); pr.demoing=true; setTimeout(function(){ if(seqToken!==tok)return; glowNext(); setTimeout(function(){if(seqToken!==tok)return; playAll(pr.notes, function(){pr.demoing=false; glowNext();});},300); }, 350); }
   else if(pr.kind==="highlow"){
     var box=document.createElement("div"); box.className="choices";
     ["1️⃣ First","2️⃣ Second"].forEach(function(lab,i){ var b=document.createElement("button"); b.className="choice"; b.textContent=lab; b.onclick=function(){chooseHL(i,b);}; box.appendChild(b); });
@@ -503,6 +503,7 @@ function padTap(i){
     if(i===pr.seq[pr.step]){ pr.step++; if(pr.step>=pr.seq.length){ winTurn(); } }
     else{ pr._wrong=(pr._wrong||0)+1; sSoft(); pr.phase="watch"; pr.step=0; toast(pick(["Oops! Listen again 👂","Good try! Watch once more 🔁","Almost! Here it comes again 🎵"])); speak("Try again! Here it is again."); var tok=seqToken; setTimeout(function(){if(seqToken!==tok)return; watchSequence();},700); }
   } else if(pr.kind==="song"){
+    if(pr.demoing)return;   // ignore taps while the song is still being demonstrated
     if(i===pr.notes[pr.step]){ lightPad(i); pr.step++; if(pr.step>=pr.notes.length){ winTurn(); } else { glowNext(); } }
     else{ pr._wrong=(pr._wrong||0)+1; sSoft(); var e2=$("#pad"+i); e2.classList.add("lit"); setTimeout(function(){e2.classList.remove("lit");},200); toast("Tap the glowing pad 😊"); }
   }

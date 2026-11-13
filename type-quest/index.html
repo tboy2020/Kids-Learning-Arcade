@@ -144,6 +144,21 @@ p.lead{font-size:clamp(16px,4.4vw,21px); color:var(--ink-soft); margin:.4em 0 1e
 .ch.wrongflash{animation:chbad .4s;}
 @keyframes curpulse{0%,100%{box-shadow:0 0 0 0 var(--pc-soft)}50%{box-shadow:0 0 0 6px var(--pc-soft)}}
 @keyframes chbad{0%,100%{transform:translateY(0)}30%{transform:translateY(-3px); color:var(--bad);}}
+/* spelling-from-memory slots + listen lock */
+.ch.hole{display:inline-block; min-width:.72em; text-align:center; border-bottom:4px solid var(--card-edge); color:var(--ink); margin:0 3px; font-weight:800;}
+.ch.hole.filled{border-bottom-color:var(--pc);}
+.ch.hole.cur{border-bottom-color:var(--pc); background:var(--pc-soft); border-radius:6px 6px 0 0;}
+.ch.hole.good{border-bottom-color:var(--ok); color:var(--ok);}
+.ch.hole.bad{border-bottom-color:var(--bad); color:var(--bad);}
+.kbd.locked{opacity:.4; filter:grayscale(.45); pointer-events:none;}
+.listencue{display:inline-flex; align-items:center; gap:8px; background:var(--pc-soft); color:var(--pc); font-weight:900; border-radius:999px; padding:9px 16px; font-size:clamp(15px,4.2vw,19px); margin:4px 0;}
+.listencue .ear{animation:earwig 1s ease-in-out infinite; display:inline-block;}
+@keyframes earwig{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
+.phasetag{display:inline-block; font-size:13px; font-weight:900; letter-spacing:.04em; padding:3px 11px; border-radius:999px; margin-bottom:4px;}
+.phasetag.copy{background:#e2e9ff; color:var(--brand);}
+.phasetag.spell{background:#e7f8f0; color:var(--ok);}
+.phasetag.fill{background:#efe0fb; color:#8a4fe0;}
+.spellbar{display:flex; gap:10px; justify-content:center; align-items:center; flex-wrap:wrap; margin:4px 0 2px;}
 .saybtns{display:flex; gap:10px; justify-content:center; margin:8px 0;}
 .kbd{max-width:640px; margin:10px auto 0; display:flex; flex-direction:column; gap:7px; touch-action:manipulation;}
 .krow{display:flex; gap:5px; justify-content:center;}
@@ -285,6 +300,10 @@ footer.credit{color:var(--ink-soft); font-size:13px; margin-top:16px;}
       <button class="toggle on" id="tgTTS" onclick="toggleOpt('tts',this)"><span class="dot"></span>🔊 Read it aloud</button>
       <button class="toggle on" id="tgSFX" onclick="toggleOpt('sfx',this)"><span class="dot"></span>🎵 Fun sounds</button>
     </div>
+    <div class="row" style="margin-top:10px">
+      <button class="toggle" id="tgListenfill" onclick="toggleOpt('listenfill',this)"><span class="dot"></span>🎧 Listen &amp; Fill mode</button>
+    </div>
+    <div class="hint-txt">Normal play teaches each word: <b>listen → type → spell it from memory</b>. Turn on 🎧 Listen &amp; Fill for a pure listening game — hear the clue, type the word.</div>
     <div style="margin-top:18px"><button class="btn big" id="startBtn" onclick="startGame()">🚀 Start!</button>
       <div class="hint-txt" id="startHint"></div></div>
   </section>
@@ -356,7 +375,8 @@ footer.credit{color:var(--ink-soft); font-size:13px; margin-top:16px;}
   <h2>How to Play ⌨️</h2>
   <div class="step"><div class="n">1</div><div><b>Take turns</b><p>Pick who's playing. A banner shows whose turn it is, in their colour.</p></div></div>
   <div class="step"><div class="n">2</div><div><b>Type what you see</b><p>Tap the glowing key (or use a real keyboard). Each key is coloured for the finger that presses it.</p></div></div>
-  <div class="step"><div class="n">🧠</div><div><b>Learn the word</b><p>Every word shows and says its meaning — so you learn new words as you type. Tap 🔊 to hear it again.</p></div></div>
+  <div class="step"><div class="n">👂</div><div><b>Listen first</b><p>The word and its meaning are read aloud. The keyboard waits until the voice finishes — then it's your turn. Tap 🔊 to hear it again.</p></div></div>
+  <div class="step"><div class="n">✍️</div><div><b>Then spell it</b><p>After you copy the word, it hides and you spell it from memory. Miss it? You hear it once more and try again, then the answer is shown.</p></div></div>
   <div class="step"><div class="n">⭐</div><div><b>Earn stars</b><p>Neat, accurate typing earns more stars. Wrong keys just wobble — never a buzzer!</p></div></div>
   <div class="step"><div class="n">📊</div><div><b>Grown-ups</b><p>The Parents page (with a PIN) shows each child's words learned, accuracy and speed, per theme.</p></div></div>
   <div class="center"><button class="btn" onclick="closeHow()">Got it! 👍</button></div>
@@ -447,7 +467,7 @@ function sanitize(s){ s=String(s); var out=""; for(var i=0;i<s.length;i++){ var 
 var NUMW=["zero","one","two","three","four","five","six","seven","eight","nine","ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen","seventeen","eighteen","nineteen","twenty"];
 
 /* ---------- state ---------- */
-var opt={tts:true,sfx:true,finger:true,music:false};
+var opt={tts:true,sfx:true,finger:true,music:false,listenfill:false};
 var S={themes:{},rounds:10};          // session setup (which kids chosen is per-session via chosen set)
 var CHILDREN=[];                       // persistent profiles
 var chosen={};                         // id -> true for this session
@@ -461,7 +481,7 @@ function saveOpt(){try{localStorage.setItem("tq_opt",JSON.stringify(opt));}catch
 function saveSetup(){try{localStorage.setItem("tq_setup",JSON.stringify({themes:S.themes,rounds:S.rounds,chosen:chosen}));}catch(e){}}
 function saveChildren(){try{localStorage.setItem("tq_children",JSON.stringify(CHILDREN));}catch(e){}}
 function loadAll(){try{
-  var o=localStorage.getItem("tq_opt"); if(o){var p=JSON.parse(o); if(p){opt.tts=p.tts!==false;opt.sfx=p.sfx!==false;opt.finger=p.finger!==false;opt.music=!!p.music;}}
+  var o=localStorage.getItem("tq_opt"); if(o){var p=JSON.parse(o); if(p){opt.tts=p.tts!==false;opt.sfx=p.sfx!==false;opt.finger=p.finger!==false;opt.music=!!p.music;opt.listenfill=!!p.listenfill;}}
   var c=localStorage.getItem("tq_children"); if(c){var cc=JSON.parse(c); if(Array.isArray(cc))CHILDREN=cc;}
   var s=localStorage.getItem("tq_setup"); if(s){var ss=JSON.parse(s); if(ss){S.themes=ss.themes||{};S.rounds=ss.rounds||10; if(ss.chosen)chosen=ss.chosen;}}
 }catch(e){}
@@ -500,27 +520,48 @@ function toggleMusic(el){ opt.music=!opt.music; if(el)el.classList.toggle("on",o
 function pickVoice(){try{var vs=window.speechSynthesis.getVoices()||[]; var pref=["Samantha","Google US English","Microsoft Zira","Microsoft Aria","Karen","Moira","Google UK English Female"];
   for(var p=0;p<pref.length;p++)for(var i=0;i<vs.length;i++)if(vs[i].name.indexOf(pref[p])>=0){voice=vs[i];return;}
   for(var j=0;j<vs.length;j++)if((vs[j].lang||"").toLowerCase().indexOf("en")===0){voice=vs[j];return;} if(vs.length)voice=vs[0];}catch(e){}}
-function speak(t,rate,pitch){if(!opt.tts||!t)return; try{var sy=window.speechSynthesis; if(!sy)return; sy.cancel();
-  var u=new SpeechSynthesisUtterance(String(t)); u.rate=rate||0.92; u.pitch=(pitch==null?1.1:pitch); if(voice)u.voice=voice; sy.speak(u);}catch(e){}}
+/* speech QUEUE — each line waits for the previous to finish (no abrupt cut-off), brisk pace */
+var SAY_RATE=0.98;
+var sq={items:[], active:false, token:0};
+function speakStop(){ sq.items=[]; sq.active=false; sq.token++; try{if(window.speechSynthesis)window.speechSynthesis.cancel();}catch(e){} }
+function estMs(t,r){ return Math.max(650,(String(t).length*62)/(r||1)); }
+function enqueueSpeak(t,o){ o=o||{};
+  if(!opt.tts||!t){ if(o.cb){try{o.cb();}catch(e){}} return; }
+  sq.items.push({t:String(t),rate:o.rate||SAY_RATE,pitch:(o.pitch==null?1.08:o.pitch),cb:o.cb}); pumpSpeak();
+}
+function pumpSpeak(){
+  if(sq.active)return; var it=sq.items.shift(); if(!it)return;
+  sq.active=true; var my=sq.token; var sy; try{sy=window.speechSynthesis;}catch(e){sy=null;}
+  var done=false;
+  var finish=function(){ if(done)return; done=true; if(my!==sq.token)return; sq.active=false; if(it.cb){try{it.cb();}catch(e){}} pumpSpeak(); };
+  if(!sy){ setTimeout(finish,10); return; }
+  try{ var u=new SpeechSynthesisUtterance(it.t); u.rate=it.rate; u.pitch=it.pitch; if(voice)u.voice=voice;
+    u.onend=finish; u.onerror=finish; setTimeout(finish, estMs(it.t,it.rate)+1100); sy.speak(u);
+  }catch(e){ finish(); }
+}
+/* speak() now QUEUES (celebrations, turn calls); sayNow() interrupts then speaks */
+function speak(t,rate,pitch){ enqueueSpeak(t,{rate:rate,pitch:pitch}); }
+function sayNow(t,rate,pitch){ speakStop(); enqueueSpeak(t,{rate:rate,pitch:pitch}); }
 
 /* ---------- screens ---------- */
 function show(id){$$(".screen").forEach(function(s){s.classList.remove("active");}); var el=$("#"+id); if(el)el.classList.add("active"); var pa=$("#pass"); if(pa&&id!=="game")pa.classList.remove("show"); window.scrollTo(0,0);}
 function goSetup(){resumeAudio(); buildSetup(); $("#startBtn").textContent=advMode?"🗺️ Choose a Quest!":"🚀 Start!"; show("setup");}
 function goLearn(){advMode=false; goSetup();}
 function goAdventure(){advMode=true; goSetup();}
-function quitToHome(){if(window.confirm("Leave the game and go home? This round's scores will be lost (learning is still saved).")){try{window.speechSynthesis.cancel();}catch(e){} show("splash");}}
+function quitToHome(){if(window.confirm("Leave the game and go home? This round's scores will be lost (learning is still saved).")){speakStop(); show("splash");}}
 function openHow(){$("#howOverlay").classList.add("show");}
 function closeHow(){$("#howOverlay").classList.remove("show");}
 function openSettings(){syncToggles(); $("#setOverlay").classList.add("show");}
 function closeSettings(){$("#setOverlay").classList.remove("show");}
 function toggleOpt(k,el){opt[k]=!opt[k]; if(el)el.classList.toggle("on",opt[k]); if(opt.sfx&&k==="sfx")sTap(); saveOpt();}
-function syncToggles(){["tts","sfx","finger","music"].forEach(function(k){ var cap=k.charAt(0).toUpperCase()+k.slice(1); var a=$("#s"+cap),b=$("#tg"+cap); if(a)a.classList.toggle("on",opt[k]); if(b)b.classList.toggle("on",opt[k]); });}
+function syncToggles(){["tts","sfx","finger","music","listenfill"].forEach(function(k){ var cap=k.charAt(0).toUpperCase()+k.slice(1); var a=$("#s"+cap),b=$("#tg"+cap); if(a)a.classList.toggle("on",opt[k]); if(b)b.classList.toggle("on",opt[k]); });}
 
 /* ---------- children + setup ---------- */
 function setRounds(r){sTap(); S.rounds=r; $$("#roundsSeg button").forEach(function(b){b.classList.toggle("on",+b.getAttribute("data-r")===r);}); saveSetup();}
 function buildSetup(){
   $$("#roundsSeg button").forEach(function(b){b.classList.toggle("on",+b.getAttribute("data-r")===S.rounds);});
   $("#tgTTS").classList.toggle("on",opt.tts); $("#tgSFX").classList.toggle("on",opt.sfx);
+  var lf=$("#tgListenfill"); if(lf)lf.classList.toggle("on",opt.listenfill);
   renderKidGrid(); renderThemeChips(); validateStart();
 }
 function renderKidGrid(){
@@ -616,7 +657,7 @@ function startGame(){
   if(!players.length){ toast("Pick at least one player 🙂"); return; }
   saveSetup();
   if(advMode){ advPlayers=players; renderWorldSelect(); show("worldselect"); return; }
-  G={players:players, rounds:S.rounds, turnCount:0, total:players.length*S.rounds, problem:null, firstTut:tutSeen()};
+  G={players:players, rounds:S.rounds, turnCount:0, total:players.length*S.rounds, problem:null, firstTut:tutSeen(), fill:!!opt.listenfill};
   show("game"); buildKeyboard(); startTurn();
 }
 function tutSeen(){try{return localStorage.getItem("tq_tut")==="1";}catch(e){return false;}}
@@ -642,10 +683,10 @@ function beginTurn(){
   $("#turnbanner").innerHTML="🎯 <b>"+escapeHTML(p.name)+"</b> · "+TIER_NAME[p.tier]+" <span class='roundtag'>· Round "+curRound()+"/"+G.rounds+"</span> <span class='buddy' id='buddy'>"+(p.buddy||"🤖")+"</span>";
   G.problem=genProblem(p); renderProblem();
   if(!G.firstTut){G.firstTut=true; markTut(); setTimeout(openHow,400);}
-  setTimeout(sayTarget,450);
+  setTimeout(startFlow,350);
 }
 function endTurn(){if(G.ending)return; G.ending=true; G.turnCount++; var who=G.turnCount; if(G.turnCount>=G.total) setTimeout(function(){if(G&&G.turnCount===who){G.ending=false; endGame();}},900); else setTimeout(function(){if(G&&G.turnCount===who){G.ending=false; startTurn();}},900);}
-function skipTurn(){if(G.ending)return; if(G.adventure){ advAdvance(false); return; } sSoft(); speak("That's okay! Next player."); toast("No worries — next turn! 😊"); endTurn();}
+function skipTurn(){if(G.ending)return; if(G.adventure){ advAdvance(false); return; } speakStop(); sSoft(); speak("That's okay! Next player."); toast("No worries — next turn! 😊"); endTurn();}
 
 function renderScoreboard(){
   var host=$("#scorebar"); host.innerHTML="";
@@ -679,6 +720,7 @@ function caseFor(entry,tier){ var w=entry.w; if(tier<=2) return w.toLowerCase();
 
 function genProblem(p){
   var ths=selectedThemes(); var th=pick(ths); var t=p.tier;
+  if(G&&G.fill){ if(th==="comp")th="english"; return genWord(p,th,Math.min(t,3)); } // Listen & Fill: single words with a meaning
   if(t===4) return genSentence(p,th);
   return genWord(p,th,t);
 }
@@ -752,13 +794,24 @@ function renderProblem(){
   var pr=G.problem;
   var scn=$("#scene"); if(scn)scn.style.display=(G&&G.adventure)?"":"none";
   $("#prompt").innerHTML = themeById(pr.theme).emoji+" "+escapeHTML(pr.label);
-  $("#meaning").innerHTML = (pr.tier<=3 && pr.meaning) ? ("💡 <b>"+escapeHTML(cap(pr.vocab?pr.vocab.word:(pr.target)))+"</b> — "+escapeHTML(pr.meaning)) : "";
   $("#compArea").innerHTML=""; $("#kbd").style.display="";
   document.documentElement.style.setProperty("--tintc", THEME_TINT[pr.theme]||"transparent");
   var bd=$("#buddy"); if(bd)bd.className="buddy";
   pr.idx=0; pr.errors=0; pr.started=false; pr.t0=0; pr.done=false; pr.awaitComp=false;
-  renderText(); renderStats(); updateGlow();
+  pr.single=(pr.target.indexOf(" ")<0) && !pr.comp;   // single word → gets the spell step
+  pr.phase="intro"; pr.flow=0; pr.spellRound=0; pr.spelled=null; pr.buf="";
+  setMeaning(pr.single?"full":"none");
+  $("#kbd").classList.add("locked");                   // stays locked until the word is read (startFlow)
+  renderText(); renderStats();
 }
+function setMeaning(mode){
+  var pr=G.problem, el=$("#meaning"); if(!el)return;
+  if(!pr.meaning || pr.tier>3 || mode==="none"){ el.innerHTML=""; return; }
+  if(mode==="clue") el.innerHTML="💡 "+escapeHTML(pr.meaning);
+  else el.innerHTML="💡 <b>"+escapeHTML(cap(pr.vocab?pr.vocab.word:pr.target))+"</b> — "+escapeHTML(pr.meaning);
+}
+function lockKbd(cueHTML){ $("#kbd").classList.add("locked"); $("#fingerhint").innerHTML=cueHTML||""; }
+function unlockKbd(){ $("#kbd").classList.remove("locked"); }
 function renderText(){
   var pr=G.problem, host=$("#typetext"); host.innerHTML=""; pr.spans=[];
   for(var i=0;i<pr.target.length;i++){
@@ -777,16 +830,51 @@ function renderStats(){
   $("#stats").innerHTML=parts.join(" · ");
 }
 function liveWPM(pr){ if(!pr.t0)return 0; var mins=(now()-pr.t0)/60000; if(mins<0.0001)return 0; return Math.min(220,Math.max(0,Math.round((pr.idx/5)/mins))); }
-function pressKey(ch){
-  if(!typingActive())return;
-  var pr=G.problem; var target=pr.target[pr.idx];
+/* ===== staged word flow: LISTEN → COPY → SPELL (and the optional LISTEN & FILL) ===== */
+function overlayUp(){ return $("#pass").classList.contains("show")||$("#howOverlay").classList.contains("show")||$("#setOverlay").classList.contains("show"); }
+function speakSeqThen(parts, cb){
+  parts=(parts||[]).filter(function(x){return x&&x.t;});
+  if(!parts.length){ if(cb)cb(); return; }     // queues AFTER any pending praise (never cuts it)
+  parts.forEach(function(p,i){ enqueueSpeak(p.t,{rate:p.rate,pitch:p.pitch,cb:(i===parts.length-1?cb:null)}); });
+}
+function startFlow(){
+  if(!G||!G.problem)return; var pr=G.problem;
+  if(G.fill && pr.single){ pr.mode="fill"; enterFillSay(); return; }
+  pr.mode="spell"; enterIntro(false);
+}
+/* ---- STEP 1: listen (keyboard locked until the word + meaning are spoken) ---- */
+function enterIntro(reteach){
+  var pr=G.problem; if(!pr)return;
+  pr.phase="intro"; pr.idx=0; pr.errors=0; pr.started=false; pr.t0=0;
+  if(!reteach){ pr.spellRound=1; pr.spelled=null; }
+  $("#compArea").innerHTML="";
+  $("#prompt").innerHTML="<span class='phasetag copy'>"+(pr.single?"① LISTEN":"LISTEN")+"</span><br>"+themeById(pr.theme).emoji+" "+escapeHTML(pr.single?"Listen…":pr.label);
+  setMeaning("full"); renderText();
+  $$("#kbd .key").forEach(function(k){k.classList.remove("glow");}); if(shiftEl)shiftEl.classList.remove("glow");
+  lockKbd("<span class='listencue'><span class='ear'>👂</span> Listen…</span>");
+  speakIntro();
+}
+function speakIntro(){
+  var pr=G.problem; var flow=++pr.flow;
+  var cb=function(){ if(G&&G.problem===pr&&pr.flow===flow&&pr.phase==="intro") enterCopy(); };
+  var parts = (pr.single&&pr.vocab) ? [{t:pr.vocab.word},{t:(pr.vocab.meaning?("means "+pr.vocab.meaning):"")}] : [{t:(pr.say||pr.target)}];
+  speakSeqThen(parts, cb);
+}
+/* ---- STEP 2: copy the word you can see (guided — must press the glowing key) ---- */
+function enterCopy(){
+  var pr=G.problem; if(!pr)return;
+  pr.phase="copy"; pr.idx=0; pr.errors=0; pr.started=false; pr.t0=0;
+  unlockKbd(); $("#compArea").innerHTML="";
+  $("#prompt").innerHTML="<span class='phasetag copy'>"+(pr.single?"② TYPE IT":"TYPE IT")+"</span><br>"+themeById(pr.theme).emoji+" "+escapeHTML(pr.label);
+  setMeaning("full"); renderText(); renderStats(); updateGlow(); sTap();
+}
+function copyKey(ch){
+  var pr=G.problem; if(pr.idx>=pr.target.length)return; var target=pr.target[pr.idx];
   if(keyMatches(ch,target)){
     flashKey(ch,"goodflash");
     var sp=pr.spans[pr.idx]; if(sp){sp.classList.remove("cur","todo"); sp.classList.add("done");}
-    pr.idx++;
-    if(!pr.started){pr.started=true; pr.t0=now();}
-    sTick();
-    if(pr.idx>=pr.target.length){ renderStats(); completeTyping(); return; }
+    pr.idx++; if(!pr.started){pr.started=true; pr.t0=now();} sTick();
+    if(pr.idx>=pr.target.length){ renderStats(); completeCopy(); return; }
     var nx=pr.spans[pr.idx]; if(nx){nx.classList.remove("todo"); nx.classList.add("cur");}
     renderStats(); updateGlow();
   } else {
@@ -797,17 +885,117 @@ function pressKey(ch){
     renderStats();
   }
 }
-function typingActive(){ return $("#game").classList.contains("active") && G && G.problem && G.problem.typing && !G.problem.done && !G.problem.awaitComp
-  && !$("#pass").classList.contains("show") && !$("#howOverlay").classList.contains("show") && !$("#setOverlay").classList.contains("show"); }
-
-function completeTyping(){
-  var pr=G.problem; pr.done=true;
+function completeCopy(){
+  var pr=G.problem;
   pr._elapsed = pr.t0? (now()-pr.t0):0;
   var total=pr.idx+pr.errors; pr.acc = total>0? Math.round(pr.idx/total*100):100;
   var mins=(pr._elapsed||0)/60000; pr.wpm = mins>0.0001? Math.min(220,Math.round((pr.target.length/5)/mins)) : 0;
-  if(G.adventure){ advFinish(); return; }
+  if(pr.single){ sGood(); reactBuddy("win"); lockKbd(""); setTimeout(enterSpellSay,460); return; }
+  pr.done=true;
+  if(G.adventure){ advAdvance(true); return; }
   if(pr.comp){ askComp(); return; }
-  finishTurn(false);
+  finishTurn(false, null);
+}
+/* ---- STEP 3: spell it from memory (word hidden, free typing, 1 chance then re-teach) ---- */
+function enterSpellSay(){
+  var pr=G.problem; if(!pr)return;
+  pr.phase="spellsay"; pr.buf=""; if(!pr.spellRound)pr.spellRound=1;
+  $("#prompt").innerHTML="<span class='phasetag spell'>③ SPELL IT</span><br>✍️ "+escapeHTML(pr.target.length>1?"Spell it from memory":"Type the letter you hear");
+  setMeaning("clue"); renderHoles(false); renderSpellBar();
+  lockKbd("<span class='listencue'><span class='ear'>👂</span> Listen…</span>");
+  speakSpellPrompt();
+}
+function speakSpellPrompt(){
+  var pr=G.problem; var flow=++pr.flow;
+  var cb=function(){ if(G&&G.problem===pr&&pr.flow===flow&&pr.phase==="spellsay") enterType("spell"); };
+  speakSeqThen([{t:(pr.target.length>1?("Now spell: "+pr.target):("Now type: "+pr.target))}], cb);
+}
+/* ---- optional LISTEN & FILL mode: hear the meaning, type the word (no copy step) ---- */
+function enterFillSay(){
+  var pr=G.problem; if(!pr)return;
+  pr.phase="fillsay"; pr.buf=""; if(!pr.spellRound)pr.spellRound=1;
+  $("#prompt").innerHTML="<span class='phasetag fill'>🎧 LISTEN &amp; FILL</span><br>"+escapeHTML("Listen, then type the word");
+  setMeaning("clue"); renderHoles(false); renderSpellBar();
+  lockKbd("<span class='listencue'><span class='ear'>👂</span> Listen…</span>");
+  speakFillPrompt();
+}
+function speakFillPrompt(){
+  var pr=G.problem; var flow=++pr.flow;
+  var cb=function(){ if(G&&G.problem===pr&&pr.flow===flow&&pr.phase==="fillsay") enterType("fill"); };
+  var clue = pr.vocab? pr.vocab.meaning : (pr.say||pr.target);
+  speakSeqThen([{t:"Listen."},{t:clue},{t:"What word is it?"}], cb);
+}
+function enterType(mode){
+  var pr=G.problem; if(!pr)return;
+  pr.phase=(mode==="fill")?"fill":"spell"; pr.mode=pr.phase; unlockKbd();
+  $$("#kbd .key").forEach(function(k){k.classList.remove("glow");}); if(shiftEl)shiftEl.classList.remove("glow");
+  $("#fingerhint").innerHTML="<span class='listencue'>"+(mode==="fill"?"🎧":"✍️")+" Type the word you heard</span>";
+  renderHoles(false);
+}
+function renderHoles(reveal){
+  var pr=G.problem, host=$("#typetext"); host.innerHTML=""; pr.holes=[];
+  for(var i=0;i<pr.target.length;i++){
+    var sp=document.createElement("span"); var typed=pr.buf[i]; var cls="ch hole";
+    if(reveal){ var good=typed && typed.toLowerCase()===pr.target[i].toLowerCase(); cls+=good?" good":" bad"; sp.textContent=pr.target[i]; }
+    else { if(i===pr.buf.length)cls+=" cur"; if(typed)cls+=" filled"; sp.textContent=typed?typed:"_"; }
+    sp.className=cls; host.appendChild(sp); pr.holes.push(sp);
+  }
+}
+function renderSpellBar(){
+  var host=$("#compArea"); host.innerHTML="";
+  var bar=document.createElement("div"); bar.className="spellbar";
+  var back=document.createElement("button"); back.className="btn ghost sm"; back.textContent="⌫ Undo"; back.onclick=function(){ memoryBackspace(); };
+  var hear=document.createElement("button"); hear.className="btn pc sm"; hear.textContent="🔊 Hear it"; hear.onclick=function(){ sayTarget(); };
+  bar.appendChild(back); bar.appendChild(hear); host.appendChild(bar);
+}
+function memoryKey(ch){
+  var pr=G.problem; if(!/[a-z]/i.test(ch))return;         // single-word targets are letters only
+  if(pr.buf.length>=pr.target.length)return;
+  pr.buf+=ch; sTick(); renderHoles(false);
+  if(pr.buf.length>=pr.target.length){ lockKbd(""); setTimeout(checkMemory,240); }
+}
+function memoryBackspace(){
+  var pr=G.problem; if(pr.phase!=="spell"&&pr.phase!=="fill")return;
+  if(pr.buf.length){ pr.buf=pr.buf.slice(0,-1); sTap(); unlockKbd(); renderHoles(false); }
+}
+function checkMemory(){
+  var pr=G.problem; if(!pr)return;
+  if(pr.buf.toLowerCase()===pr.target.toLowerCase()) memoryWin(); else memoryMiss();
+}
+function memoryWin(){
+  var pr=G.problem; pr.spelled=true; renderHoles(true); unlockKbd();
+  sGood(); setTimeout(sStar,160); confetti(); reactBuddy("win");
+  speakStop(); speak(pick(["Yes!","Perfect!","Well spelled!","Brilliant!"])+(pr.mode==="fill"?" Great listening!":""));
+  toast("✍️ "+curPlayer().name+" spelled it!");
+  setTimeout(function(){ wordDone(); }, 1150);
+}
+function memoryMiss(){
+  var pr=G.problem; renderHoles(true); unlockKbd(); sSoft(); reactBuddy("oops");
+  if((pr.spellRound||1)<2){
+    pr.spellRound=2;
+    speakStop(); speak(pick(["Good try!","Almost!","Nearly there!"])+" Let's learn it once more.");
+    toast("Let's try that one again 😊");
+    setTimeout(function(){ if(pr.mode==="fill") enterFillSay(); else enterIntro(true); }, 1950);
+  } else {
+    pr.spelled=false;
+    speakStop(); speak("The word is "+pr.target+".");
+    toast("The word was: "+pr.target);
+    setTimeout(function(){ wordDone(); }, 2150);
+  }
+}
+function wordDone(){
+  var pr=G.problem; pr.done=true;
+  if(G.adventure){ advAdvance(true); return; }
+  finishTurn(false, pr.spelled);
+}
+/* routes every key (on-screen + physical) to the active phase */
+function pressKey(ch){
+  if(!G||!G.problem) return;
+  if(!$("#game").classList.contains("active")||overlayUp()) return;
+  var ph=G.problem.phase;
+  if(ph==="copy") copyKey(ch);
+  else if(ph==="spell"||ph==="fill") memoryKey(ch);
+  // intro / spellsay / fillsay are locked — ignore
 }
 function askComp(){
   var pr=G.problem; pr.awaitComp=true; $("#kbd").style.display="none"; $("#fingerhint").textContent="";
@@ -826,21 +1014,23 @@ function askComp(){
   speak(c.q);
 }
 function praise(){return pick(["Great job!","Awesome!","You are a star!","Fantastic!","Wonderful!","Super!","Way to go!","Brilliant!","Amazing!","Well done!"]);}
-function finishTurn(compCorrect){
+function finishTurn(compCorrect, spelled){
   var pr=G.problem, p=curPlayer();
   var stars = pr.errors===0 ? 3 : (pr.errors<=Math.max(1,Math.round(pr.target.length*0.12)) ? 2 : 1);
+  if(spelled===false && stars>1) stars--;                 // missed the spelling → one fewer star
   var len=pr.target.length;
   var base = pr.tier*3 + Math.round(len/2);
   var speedBonus = (pr.tier>=3 && pr.wpm>0)? Math.min(18,Math.round(pr.wpm/2)) : 0;
   var starBonus = stars*4;
   var compBonus = compCorrect? 10 : 0;
-  var pts = base+starBonus+speedBonus+compBonus;
+  var spellBonus = spelled===true? 8 : 0;
+  var pts = base+starBonus+speedBonus+compBonus+spellBonus;
   p.score+=pts; p.stars+=stars; p.streak = (stars>=2? p.streak+1 : 0);
-  recordResult(p, pr, compCorrect);
+  recordResult(p, pr, compCorrect, spelled);
   renderScoreboard(); sGood(); setTimeout(sStar,170); confetti(); reactBuddy("win");
-  var line = "⭐".repeat(stars)+"  "+p.name+" +"+pts+(pr.tier>=3&&pr.wpm?("  ·  "+pr.wpm+" wpm"):"");
+  var line = "⭐".repeat(stars)+"  "+p.name+" +"+pts+(spelled===true?" ✍️":"")+(pr.tier>=3&&pr.wpm?("  ·  "+pr.wpm+" wpm"):"");
   toast(line);
-  if(pr.vocab) speak(praise()+" "+pr.vocab.word+" means "+pr.vocab.meaning); else speak(praise());
+  speak(praise());                                        // meaning was already taught in the Listen step — keep it brisk
   checkBadges(p,stars,pr);
   endTurn();
 }
@@ -851,18 +1041,37 @@ function checkBadges(p,stars,pr){
   if(stars===3 && !p.badges.perfect){p.badges.perfect=true; setTimeout(function(){toast("⭐ Perfect — no mistakes!");},1300);}
   if(pr.tier>=3 && pr.wpm>=15 && !p.badges.speedy){p.badges.speedy=true; setTimeout(function(){toast("⚡ Speedy Typist!");},1500);}
 }
-function sayTarget(){ var pr=G.problem; if(!pr)return; if(pr.comp)speak(pr.comp.p); else if(pr.vocab)speak(pr.vocab.word+". "+pr.vocab.meaning); else speak(pr.say||pr.target); }
-function hint(){ var pr=G.problem; if(!pr||pr.done)return; updateGlow(); var ch=pr.target[pr.idx]; sStar();
-  var name = ch===" "?"space, with your thumb":(/[a-z]/i.test(ch)?("the letter "+ch.toUpperCase()):({".":"a full stop",",":"a comma","?":"a question mark","!":"an exclamation mark"}[ch]||ch));
-  speak("Type "+name); }
+function sayTarget(){
+  var pr=G.problem; if(!pr)return;
+  if(pr.phase==="intro"){ speakStop(); speakIntro(); return; }          // locked phases: replay (keeps the unlock callback)
+  if(pr.phase==="spellsay"){ speakStop(); speakSpellPrompt(); return; }
+  if(pr.phase==="fillsay"){ speakStop(); speakFillPrompt(); return; }
+  speakStop();
+  if(pr.phase==="spell"){ enqueueSpeak("Spell: "+pr.target); return; }
+  if(pr.phase==="fill"){ enqueueSpeak(pr.vocab?pr.vocab.meaning:(pr.say||pr.target)); return; }
+  if(pr.comp){ enqueueSpeak(pr.comp.p); return; }
+  if(pr.vocab){ enqueueSpeak(pr.vocab.word+". "+(pr.vocab.meaning||"")); return; }
+  enqueueSpeak(pr.say||pr.target);
+}
+function hint(){
+  var pr=G.problem; if(!pr||pr.done)return;
+  if(pr.phase==="copy"){ updateGlow(); var ch=pr.target[pr.idx]; sStar();
+    var name = ch===" "?"space, with your thumb":(/[a-z]/i.test(ch)?("the letter "+ch.toUpperCase()):({".":"a full stop",",":"a comma","?":"a question mark","!":"an exclamation mark"}[ch]||ch));
+    sayNow("Type "+name); return; }
+  if(pr.phase==="spell"||pr.phase==="fill"){ var i=pr.buf.length; if(i<pr.target.length){ var L=pr.target[i];
+    if(pr.holes&&pr.holes[i]){ pr.holes[i].textContent=L; pr.holes[i].classList.add("filled"); } sStar();
+    sayNow("The next letter is "+String(L).toUpperCase()); } return; }
+  sayTarget();
+}
 
 /* ---------- record learning ---------- */
-function recordResult(p, pr, compCorrect){
+function recordResult(p, pr, compCorrect, spelled){
   var ch=p.ref; if(!ch)return; var th=pr.theme;
   var ts=ch.stats.theme[th]||(ch.stats.theme[th]={ch:0,er:0,ms:0,bw:0,tn:0,comp:0,compOK:0});
   ts.ch+=pr.idx; ts.er+=pr.errors; ts.tn++; ts.ms+=(pr._elapsed||0); if(pr.wpm>ts.bw)ts.bw=pr.wpm;
+  if(spelled===true){ ts.sp=(ts.sp||0)+1; }
   if(pr.comp){ ts.comp=(ts.comp||0)+1; if(compCorrect)ts.compOK=(ts.compOK||0)+1; }
-  if(pr.vocab && pr.acc>=70){ recordWord(ch, pr.vocab); }
+  if(pr.vocab && pr.acc>=70){ recordWord(ch, pr.vocab, spelled); }
   // streak of days
   var tk=todayKey(); var st=ch.stats.streak;
   if(st.last!==tk){ var y=new Date(Date.now()-86400000); var yk=y.getFullYear()+"-"+("0"+(y.getMonth()+1)).slice(-2)+"-"+("0"+y.getDate()).slice(-2);
@@ -870,16 +1079,18 @@ function recordResult(p, pr, compCorrect){
   ch.stats.lastPlayed=now();
   saveChildren();
 }
-function recordWord(ch, vocab){
+function recordWord(ch, vocab, spelled){
   var wm=ch.stats.words[vocab.theme]||(ch.stats.words[vocab.theme]={});
   var r=wm[vocab.word]||(wm[vocab.word]={s:0,c:0,m:false,f:now(),mt:0});
   r.s++; r.c++; r.mean=vocab.meaning;
-  if(!r.m && r.c>=3){ r.m=true; r.mt=now(); }
+  if(spelled===true){ r.sp=(r.sp||0)+1; }               // spelled from memory
+  var need=(r.sp&&r.sp>=1)?2:3;                          // spelling it right masters the word faster
+  if(!r.m && r.c>=need){ r.m=true; r.mt=now(); }
 }
 
 /* ---------- end game ---------- */
 function endGame(){if(!$("#game").classList.contains("active"))return;
-  try{window.speechSynthesis.cancel();}catch(e){}
+  speakStop();
   var ranked=G.players.slice().sort(function(a,b){return b.score-a.score||b.stars-a.stars;});
   var top=ranked[0].score; var winners=ranked.filter(function(p){return p.score===top;}); var tie=winners.length>1;
   show("win");
@@ -1048,9 +1259,10 @@ function loadBanks(){
 
 /* ---------- physical keyboard ---------- */
 function onKeyDown(e){
-  if(!typingActive())return;
-  if(e.key==="Backspace"||e.key===" "||(e.key&&e.key.length===1)){ e.preventDefault(); }
-  if(e.key==="Backspace")return;
+  if(!G||!G.problem||!$("#game").classList.contains("active")||overlayUp())return;
+  var ph=G.problem.phase; if(ph!=="copy"&&ph!=="spell"&&ph!=="fill")return;
+  if(e.key==="Backspace"){ e.preventDefault(); if(ph==="spell"||ph==="fill")memoryBackspace(); return; }
+  if(e.key===" "||(e.key&&e.key.length===1)){ e.preventDefault(); }
   if(e.key&&e.key.length===1){ pressKey(e.key); }
 }
 
@@ -1102,7 +1314,7 @@ function advBegin(){
   var p=curPlayer(); applyColor(p); renderScoreboard(); renderScene(false);
   $("#turnbanner").innerHTML=G.world.emoji+" <b>"+escapeHTML(p.name)+"</b> <span class='roundtag'>· "+escapeHTML(G.world.name)+" · "+G.turnCount+"/"+G.total+"</span> <span class='buddy' id='buddy'>"+(p.buddy||"🤖")+"</span>";
   G.problem=genAdvProblem(p); renderProblem();
-  setTimeout(sayTarget,450);
+  setTimeout(startFlow,350);
 }
 function genAdvProblem(p){
   var ths=selectedThemes(); if(!ths.length)ths=["english"];
@@ -1129,8 +1341,7 @@ function advAdvance(credit){
 function advFinish(){ advAdvance(true); }
 function advWin(){
   if(!$("#game").classList.contains("active"))return;
-  try{window.speechSynthesis.cancel();}catch(e){}
-  var w=G.world; show("win");
+  speakStop(); var w=G.world; show("win");
   $("#winTitle").classList.remove("title-grad"); $("#winTitle").style.color=curPlayer().color.hex; $("#winTitle").textContent=w.winTitle;
   $("#winSub").innerHTML=escapeHTML(w.winMsg)+"<br><b>“"+escapeHTML(w.verse)+"”</b>";
   var host=$("#ranks"); host.innerHTML="<div class='rankrow first'><span style='font-size:26px'>"+w.emoji+"</span>&nbsp;<b>"+escapeHTML(w.name)+" — complete!</b></div>";

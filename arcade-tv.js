@@ -66,22 +66,7 @@
        classic "page unresponsive / Wait or Exit" hang when scrolling the list. Detach it, and stop the
        forever-animating blobs, so TV scrolling stays smooth. */
     "html.tv body{background-attachment:scroll}" +
-    "html.tv .blob{animation:none}" +
-    /* ONE-SCREEN FIT (game pages only): shrink the active screen to the TV fold so play never scrolls */
-    "html.tvfit.tv,html.tvfit.tv body{height:100%;overflow:hidden}" +
-    "html.tvfit.tv body{display:flex;flex-direction:column;align-items:center;justify-content:flex-start}" +
-    "html.tvfit.tv .wrap{min-height:0;transform-origin:top center;transition:none;backface-visibility:hidden}" +
-    /* Type Quest: trim the PLAY screen's vertical rhythm so the fit scale stays near 1 and the keyboard stays big (type-quest-only selectors) */
-    "html.tv #game .turnbanner{margin:6px 0;padding:8px 14px}" +
-    "html.tv #game .typecard{margin:6px 0;padding:10px 12px}" +
-    "html.tv #game .saybtns{margin:4px 0}" +
-    "html.tv #game .kbd{margin-top:6px}" +
-    "html.tv #game .game-actions{margin-top:6px}" +
-    "html.tv #scene .scenechars{font-size:clamp(28px,6vw,40px);margin-bottom:4px}" +
-    "html.tv #scene .scenesky{padding:8px 10px}" +
-    "html.tv #compArea .compopts{max-height:34vh;overflow:auto}" +
-    /* Flip & Find: widen the small card board so the cards are 10-foot readable (.board is flip-find only) */
-    "html.tv .board{max-width:760px}";
+    "html.tv .blob{animation:none}";
   (document.head || root).appendChild(css);
 
   /* ---------------- UI chrome ---------------- */
@@ -120,7 +105,6 @@
     if (remember) write(LS_TV, tvOn ? "1" : "0");
     if (tvOn && padNav && !cur) focusFirst();
     if (!tvOn) hideRing();
-    scheduleFit();              // re-fit the active screen whenever TV mode flips on/off
     refreshToggles();
   }
   function setPadNav(on, remember) {
@@ -238,44 +222,6 @@
     else placeRing();
   });
   try { mo.observe(document.documentElement, { attributes: true, childList: true, subtree: true, attributeFilter: ["class", "style", "hidden", "disabled"] }); } catch (_) {}
-
-  /* ---------------- one-screen fit (game pages only) ---------------- */
-  // In TV mode, shrink the active screen with a transform:scale so a tall game never scrolls.
-  // Only ever shrinks (never enlarges), so screens that already fit keep their big 10-foot fonts.
-  var fitWrap = (!isHub) ? document.querySelector(".wrap") : null;
-  var canFit = !!(fitWrap && fitWrap.querySelector(".screen"));
-  if (canFit) root.classList.add("tvfit");          // gates the fit CSS to game pages only
-  var fitPending = false;
-  function fitScreen() {                              // hoisted — safe to call from setTV()
-    fitPending = false;
-    if (!canFit) return;
-    if (!tvOn) { fitWrap.style.transform = "none"; return; }
-    var active = fitWrap.querySelector(".screen.active") || fitWrap;
-    // COORDINATE GUARD: never scale a screen with a gameplay canvas (rect-math taps would desync).
-    // Only Trace Stars' #pad qualifies, and that screen fits unscaled anyway.
-    if (active.querySelector("canvas")) { fitWrap.style.transform = "none"; return; }
-    fitWrap.style.transform = "none";                // clear before measuring
-    var natural = fitWrap.scrollHeight;
-    var safe = Math.max(24, Math.round(window.innerHeight * 0.05));   // overscan / toolbar headroom
-    var avail = window.innerHeight - safe;
-    var k = (natural > 0) ? Math.min(1, avail / natural) : 1;         // only shrink, never enlarge
-    fitWrap.style.transform = (k < 1) ? ("scale(" + k + ")") : "none";
-  }
-  function scheduleFit() { if (!fitPending) { fitPending = true; requestAnimationFrame(fitScreen); } }
-  if (canFit) {
-    var fmo = new MutationObserver(function (muts) {
-      for (var i = 0; i < muts.length; i++) {
-        if (muts[i].target === fitWrap && muts[i].attributeName === "style") continue; // ignore our own write
-        scheduleFit(); return;
-      }
-    });
-    try { fmo.observe(fitWrap, { attributes: true, attributeFilter: ["class", "style"], childList: true, subtree: true }); } catch (_) {}
-    window.addEventListener("resize", scheduleFit);
-    window.addEventListener("orientationchange", scheduleFit);
-    window.addEventListener("load", scheduleFit);
-    if (document.fonts && document.fonts.ready) { try { document.fonts.ready.then(scheduleFit); } catch (_) {} }
-    scheduleFit();
-  }
 
   /* ---------------- gamepad loop ---------------- */
   var prevBtn = {}, axisHeld = { dir: null, t: 0, started: false }, FIRST = 320, REPEAT = 150, raf = null;
